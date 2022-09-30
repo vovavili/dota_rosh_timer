@@ -2,6 +2,8 @@
 DotA 2 Roshan Death Timer
 =========================
 
+.. image:: rosh_death_timer_preview.png
+    :align: center
 
 DotA 2 Roshan death timer macros, using computer vision. Tracks expiration time, minimum and
 maximum respawn timer as contents of your clipboard. Handy in combination with `Win+V <https://support.microsoft.com/en-us/windows/clipboard-in-windows-c436501e-985d-1c8d-97ea-fe46ddf338c6>`_ clipboard hotkey.
