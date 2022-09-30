@@ -52,9 +52,7 @@ def main(to_track: ToTrack = typer.Argument(ToTrack.ROSHAN)) -> None:
 
     # Numbers here indicate the approximate location of the DotA timer
     timer = np.asarray(ImageGrab.grab(bbox=(937, 24, 983, 35)))  # NOQA
-    timer = (
-        easyocr.Reader(["en"]).readtext(timer)[0][1]
-    )
+    timer = easyocr.Reader(["en"]).readtext(timer)[0][1]
 
     minutes_seconds = map(int, timer.split(":"))
     times = accumulate(
