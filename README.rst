@@ -35,7 +35,7 @@ TODO
 -------
 * Make this work on screens other than 1920x1080
 * The script runtime takes a couple of seconds. I wonder if that could be improved?
-* Adding a couple of other timers for abilities would be neat.
+* Adding a couple of other timers for abilities using OpenDotA's DotA constants API would be neat.
 
 Credits
 -------
