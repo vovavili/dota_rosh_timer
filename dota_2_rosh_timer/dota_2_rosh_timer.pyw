@@ -1,25 +1,32 @@
 """
-DotA 2 Roshan death timer macros, using computer vision. Tracks expiration time, minimum and
-maximum respawn timer as contents of your clipboard. Handy in combination with Win+V hotkey.
-Should work on any 1920x1080 screen.
+DotA 2 Roshan death timer macros, using computer vision. Tracks expiration time, minimum
+and maximum respawn timer as contents of your clipboard. Handy in combination with Win+V
+clipboard hotkey. Should work on any 1920x1080 screen.
 
-You may or may not get VAC-banned for using this in your games. Use on your own risk.
+You may or may not get VAC-banned for using this in your games, though I presume that a ban
+is unlikely as you are not interacting with DotA files in any direct or indirect way.
+Use on your own risk.
+
+By default, this tracks the Rosh timer. One can also specify command line arguments to track
+metrics like glyph and buyback cooldowns.
 """
 
-from enum import Enum
 from datetime import timedelta
+from enum import Enum
 from itertools import accumulate
 
-import typer
 import easyocr
 import numpy as np
 import pyperclip
+import typer
 from PIL import ImageGrab
 
 SECONDS_IN_A_MINUTE = 60
 
 
 class ToTrack(str, Enum):
+    """All the possible arguments as an Enum class, done for type safety."""
+
     ROSHAN = "roshan"
     GLYPH = "glyph"
     BUYBACK = "buyback"
