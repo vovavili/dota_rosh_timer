@@ -27,7 +27,8 @@ class ToTrack(str, Enum):
 
 def main(to_track: ToTrack = typer.Argument(ToTrack.ROSHAN)) -> None:
     """The main function. One can pass an argument to track other metrics here."""
-    match to_track.casefold().strip():
+    to_track = to_track.casefold().strip()
+    match to_track:
         case ToTrack.ROSHAN:
             times = [
                 timedelta(minutes=5),
@@ -59,7 +60,7 @@ def main(to_track: ToTrack = typer.Argument(ToTrack.ROSHAN)) -> None:
         ":".join((str(j).zfill(2) for j in divmod(i.seconds, SECONDS_IN_A_MINUTE)))
         for i in times
     )
-    pyperclip.copy(" -> ".join(times))
+    pyperclip.copy(to_track + " " + " -> ".join(times))
 
 
 if __name__ == "__main__":
