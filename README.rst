@@ -18,7 +18,7 @@ Installation guide
 #. Open a Windows Terminal from the Start menu and copy-paste the following command: ``pip install setuptools --user``
 #. Download and extract this repository using *Code -> Download ZIP* button.
 #. Install required dependencies by double-clicking on the *setup.py* file.
-#. Set up a macros to run *"rosh_death_timer.pyw"* script using a hotkey of your choice. I either recommend using your specialized mouse and keyboard software or AutoHotKey_.
+#. Set up a macros to run *"dota_2_rosh_timer/dota_2_rosh_timer.pyw"* script using a hotkey of your choice. I either recommend using your specialized mouse and keyboard software or AutoHotKey_.
 #. The first run will take significantly longer.
 
 Contributing
