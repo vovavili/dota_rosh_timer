@@ -21,7 +21,7 @@ Installation guide
 
 #. Install Python_. Make sure not to untick the box to register Python directory in your PATH variable.
 #. Open a Windows Terminal from the Start menu and copy-paste the following command: ``pip install setuptools --user``
-#. Download and extract this repository using *Code -> Download ZIP* button.
+#. Download and extract this repository using *Code -> Download ZIP* button at the top of this page, slightly to the right.
 #. Install required dependencies by double-clicking on the *setup.py* file.
 #. Set up a macros to run *"rosh_death_timer.pyw"* script using a hotkey of your choice. I either recommend using your specialized mouse and keyboard software or AutoHotKey_.
 #. Additionally, specify other macros to run the same script with ``glyph`` or ``buyback`` arguments.
