@@ -10,9 +10,9 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ["pyperclip", "easyocr", "Pillow", "numpy"]
+requirements = ["pyperclip", "easyocr", "Pillow", "numpy", "typer", "rich"]
 
-test_requirements = [ ]
+test_requirements = []
 
 setup(
     author="Vladimir Vilimaitis",
