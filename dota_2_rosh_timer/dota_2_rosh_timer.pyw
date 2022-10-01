@@ -8,7 +8,7 @@ is unlikely as you are not interacting with DotA files in any direct or indirect
 Use on your own risk.
 
 By default, this tracks the Roshan timer. One can also specify command line arguments to track
-metrics like glyph and buyback cooldowns.
+metrics like glyph, buyback, item and ability cooldowns.
 """
 
 import gzip
