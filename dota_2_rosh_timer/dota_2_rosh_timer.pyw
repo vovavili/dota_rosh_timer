@@ -127,7 +127,7 @@ def main(
     ),
 ) -> None:
     """The main function. One can pass a command-line argument to track other metrics here."""
-    print("Running...")
+    typer.echo("Running...")
     to_track = to_track.casefold().strip()
     if item_or_ability is not None:
         item_or_ability = item_or_ability.casefold().strip()
