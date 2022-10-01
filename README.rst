@@ -13,7 +13,14 @@ Should work on any 1920x1080 screen.
 You may or may not get VAC-banned for using this in your games, though I *presume* that a ban is unlikely as you are not interacting with DotA files in any direct or indirect way.
 Use on your own risk.
 
-By default, this tracks the Roshan timer. One can also specify command line arguments to track metrics like glyph and buyback cooldowns.
+By default (``dota_2_rosh_timer.pyw``), this tracks the Roshan timer. One can also specify command line arguments to track:
+
+* Glyph cooldown: ``dota_2_rosh_timer.pyw glyph``
+* Buyback cooldown: ``dota_2_rosh_timer.pyw buyback``
+And, with the help `OpenDotA's DotA 2 constants API <https://github.com/odota/dotaconstants>`_, one can also track the following:
+
+* Item cooldown: e.g. ``dota_2_rosh_timer.pyw item black_king_bar``
+* Abilities cooldown: e.g. ``dota_2_rosh_timer.pyw ability faceless_void_chronosphere``
 
 
 Installation guide
@@ -24,7 +31,7 @@ Installation guide
 #. Download and extract this repository using *Code -> Download ZIP* button at the top of this page, slightly to the right.
 #. Install required dependencies by double-clicking on the *setup.py* file.
 #. Set up a macros to run *"rosh_death_timer.pyw"* script using a hotkey of your choice. I either recommend using your specialized mouse and keyboard software or AutoHotKey_.
-#. Additionally, specify other macros to run the same script with ``glyph`` or ``buyback`` arguments.
+#. Additionally, specify other macros to run the same script with ``glyph``, ``buyback``, ``item`` or ``ability`` arguments.
 #. The first run will take significantly longer.
 
 Contributing
@@ -35,7 +42,7 @@ TODO
 -------
 * Make this work on screens other than 1920x1080
 * The script runtime takes a couple of seconds. I wonder if that could be improved?
-* Adding a couple of other timers for abilities using cached OpenDotA's DotA constants API would be neat.
+* Adding a more informative trackers for level of hero abilities would be neat, as now the script just gives out an information for all levels.
 
 Credits
 -------
