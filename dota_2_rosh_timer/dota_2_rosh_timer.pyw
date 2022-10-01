@@ -88,10 +88,13 @@ def _get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
                 + ".json"
             ).read()
         )
-        update_threshold = datetime.now() + timedelta(days=2)
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
         with gzip.open(CACHE_DIR / (constant_type + "_timestamp.gz"), "wb") as file:
-            pickle.dump(update_threshold, file, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(
+                datetime.now() + timedelta(days=2),
+                file,
+                protocol=pickle.HIGHEST_PROTOCOL,
+            )
         with gzip.open(CACHE_DIR / (constant_type + "_cache.gz"), "wb") as file:
             pickle.dump(data, file, protocol=pickle.HIGHEST_PROTOCOL)
     try:
@@ -147,8 +150,10 @@ def main(
                 times = [timedelta(seconds=int(i)) for i in cooldown]
                 to_track = item_or_ability.replace("_", " ")
         case _:
-            raise ValueError("Unsupported command line argument. Please use `--help` for "
-                             "a list of all supported commands.")
+            raise ValueError(
+                "Unsupported command line argument. Please use `--help` for "
+                "a list of all supported commands."
+            )
 
     # Numbers here indicate the approximate location of the DotA timer
     timer = np.asarray(ImageGrab.grab(bbox=(937, 24, 983, 35)))  # NOQA
