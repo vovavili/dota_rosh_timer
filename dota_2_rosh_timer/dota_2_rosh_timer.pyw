@@ -11,6 +11,7 @@ By default, this tracks the Rosh timer. One can also specify command line argume
 metrics like glyph and buyback cooldowns.
 """
 
+import re
 from datetime import timedelta
 from enum import Enum
 from itertools import accumulate
@@ -52,7 +53,8 @@ def main(to_track: ToTrack = typer.Argument(ToTrack.ROSHAN)) -> None:
 
     # Numbers here indicate the approximate location of the DotA timer
     timer = np.asarray(ImageGrab.grab(bbox=(937, 24, 983, 35)))  # NOQA
-    timer = easyocr.Reader(["en"]).readtext(timer)[0][1]
+    timer = easyocr.Reader(["en"]).readtext(timer)[0][1].strip()
+    timer = re.sub(r"\W", ":", timer)
 
     minutes_seconds = map(int, timer.split(":"))
     times = accumulate(
