@@ -7,7 +7,7 @@ You may or may not get VAC-banned for using this in your games, though I presume
 is unlikely as you are not interacting with DotA files in any direct or indirect way.
 Use on your own risk.
 
-By default, this tracks the Rosh timer. One can also specify command line arguments to track
+By default, this tracks the Roshan timer. One can also specify command line arguments to track
 metrics like glyph and buyback cooldowns.
 """
 
@@ -31,6 +31,14 @@ class ToTrack(str, Enum):
     ROSHAN = "roshan"
     GLYPH = "glyph"
     BUYBACK = "buyback"
+
+
+def _timedelta_to_dota_timer(time_delta: timedelta) -> str:
+    """Convert Python timedelta objects into a string of DotA-type timers.
+    Single-digit values are zero-padded."""
+    return ":".join(
+        (str(i).zfill(2) for i in divmod(time_delta.seconds, SECONDS_IN_A_MINUTE))
+    )
 
 
 def main(to_track: ToTrack = typer.Argument(ToTrack.ROSHAN)) -> None:
@@ -61,12 +69,7 @@ def main(to_track: ToTrack = typer.Argument(ToTrack.ROSHAN)) -> None:
         [timedelta(minutes=next(minutes_seconds), seconds=next(minutes_seconds))]
         + times
     )
-    # Convert an iterator of Python timedelta objects into a generator of DotA-type timers.
-    # Single-digit values are zero-padded.
-    times = (
-        ":".join((str(j).zfill(2) for j in divmod(i.seconds, SECONDS_IN_A_MINUTE)))
-        for i in times
-    )
+    times = map(_timedelta_to_dota_timer, times)
     pyperclip.copy(to_track + " " + " -> ".join(times))
 
 
