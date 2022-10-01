@@ -92,7 +92,14 @@ def _get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
             pickle.dump(update_threshold, file, protocol=pickle.HIGHEST_PROTOCOL)
         with gzip.open(CACHE_DIR / (constant_type + "_cache.gz"), "wb") as file:
             pickle.dump(data, file, protocol=pickle.HIGHEST_PROTOCOL)
-    return data[item_or_ability]["cd"]
+    try:
+        return data[item_or_ability]["cd"]
+    except KeyError as e:
+        raise KeyError(
+            "This ability or item does not exist in the OpenDotA constants "
+            "database. Maybe you misspelled it? Make sure to prefix the hero "
+            "name for abilities (e.g. `faceless_void_chronosphere`)."
+        ) from e
 
 
 def main(
