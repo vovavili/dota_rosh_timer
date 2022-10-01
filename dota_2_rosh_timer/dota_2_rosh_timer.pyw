@@ -71,6 +71,12 @@ def _get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
     """A shorthand for querying cooldowns from the OpenDota constants database. To reduce the load
     on GitHub servers and waste less traffic, queries are cached and are updated every other day."""
     try:
+        assert item_or_ability is not None
+    except AssertionError as error:
+        raise AssertionError(
+            "Missing item or ability command line parameter."
+        ) from error
+    try:
         # Check whether the locally stored cache needs an update
         with gzip.open(
             CACHE_DIR / (constant_type + "_timestamp.gz"), "rb"
