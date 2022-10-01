@@ -13,7 +13,7 @@ Should work on any 1920x1080 screen.
 You may or may not get VAC-banned for using this in your games, though I *presume* that a ban is unlikely as you are not interacting with DotA files in any direct or indirect way.
 Use on your own risk.
 
-By default, this tracks the Rosh timer. One can also specify command line arguments to track metrics like glyph and buyback cooldowns.
+By default, this tracks the Roshan timer. One can also specify command line arguments to track metrics like glyph and buyback cooldowns.
 
 
 Installation guide
