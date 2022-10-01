@@ -97,8 +97,9 @@ def _get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
     except KeyError as e:
         raise KeyError(
             "This ability or item does not exist in the OpenDotA constants "
-            "database. Maybe you misspelled it? Make sure to prefix the hero "
-            "name for abilities (e.g. `faceless_void_chronosphere`)."
+            "database, or it doesn't have a cooldown. Maybe you misspelled it? "
+            "Make sure to prefix the hero name for abilities "
+            "(e.g. `faceless_void_chronosphere`)."
         ) from e
 
 
