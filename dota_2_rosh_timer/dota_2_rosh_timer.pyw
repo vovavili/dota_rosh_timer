@@ -30,7 +30,6 @@ import typer
 from PIL import ImageGrab
 from typer import Argument
 
-GREEN_TERMINAL: Final[str] = "\033[92m"
 SECONDS_IN_A_MINUTE: Final[int] = 60
 CACHE_DIR: Final[Path] = Path().absolute() / "cache"
 
@@ -178,7 +177,7 @@ def main(
     pyperclip.copy(
         _timedelta_to_dota_timer(times, prefix=to_track, timers_sep=timers_sep)
     )
-    print(GREEN_TERMINAL + "Done!")
+    typer.secho("Done!", fg=typer.colors.GREEN)
 
 
 if __name__ == "__main__":
