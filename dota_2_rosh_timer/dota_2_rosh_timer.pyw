@@ -20,7 +20,7 @@ from datetime import datetime, timedelta
 from enum import Enum
 from itertools import accumulate
 from pathlib import Path
-from typing import Optional
+from typing import Final, Optional
 from urllib.request import urlopen
 
 import easyocr
@@ -30,9 +30,9 @@ import typer
 from PIL import ImageGrab
 from typer import Argument
 
-GREEN_TERMINAL = "\033[92m"
-SECONDS_IN_A_MINUTE = 60
-CACHE_DIR = Path().absolute() / "cache"
+GREEN_TERMINAL: Final[str] = "\033[92m"
+SECONDS_IN_A_MINUTE: Final[int] = 60
+CACHE_DIR: Final[Path] = Path().absolute() / "cache"
 
 
 class ToTrack(str, Enum):
