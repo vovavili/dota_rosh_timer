@@ -65,7 +65,7 @@ def _timedelta_to_dota_timer(
     )
 
 
-def _get_cooldowns(constant_type: str, item_or_ability: str) -> int | list:
+def _get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
     """A shorthand for querying cooldowns from the OpenDota constants database. To reduce the load
     on GitHub servers and waste less traffic, queries are cached and are updated every other day."""
     try:
