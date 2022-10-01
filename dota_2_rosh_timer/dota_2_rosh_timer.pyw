@@ -70,10 +70,10 @@ def _get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
     on GitHub servers and waste less traffic, queries are cached and are updated every other day."""
     try:
         # Check whether the locally stored cache needs an update
-        with gzip.open(CACHE_DIR / (constant_type + "_timestamp.gz"), "rb") as file:
-            update_threshold = pickle.load(file)
-
-        assert datetime.now() > update_threshold
+        with gzip.open(
+            CACHE_DIR / (constant_type + "_timestamp.gz"), "rb"
+        ) as timestamp_file:
+            assert datetime.now() > pickle.load(timestamp_file)
 
         # Load the locally stored cache
         with gzip.open(CACHE_DIR / (constant_type + "_cache.gz"), "rb") as file:
