@@ -94,18 +94,20 @@ def _get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
             pickle.dump(data, file, protocol=pickle.HIGHEST_PROTOCOL)
     try:
         return data[item_or_ability]["cd"]
-    except KeyError as e:
+    except KeyError as error:
         raise KeyError(
             "This ability or item does not exist in the OpenDotA constants "
             "database, or it doesn't have a cooldown. Maybe you misspelled it? "
             "Make sure to prefix the hero name for abilities "
             "(e.g. `faceless_void_chronosphere`)."
-        ) from e
+        ) from error
 
 
 def main(
     to_track: ToTrack = Argument(
-        ToTrack.ROSHAN, help="Specify the kind of information you want to track."
+        ToTrack.ROSHAN,
+        help="Specify the kind of information you want to track. If no argument "
+        "is specified, Roshan death time is tracked.",
     ),
     item_or_ability: Optional[str] = Argument(
         None,
@@ -139,7 +141,7 @@ def main(
             if isinstance(cooldown, int):
                 times = [timedelta(seconds=cooldown)]
             else:
-                timers_sep = " || "  # TODO: make this more informative in the future
+                timers_sep = " || "
                 times = [timedelta(seconds=int(i)) for i in cooldown]
                 to_track = item_or_ability.replace("_", " ")
         case _:
