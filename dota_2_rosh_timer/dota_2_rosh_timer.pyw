@@ -40,8 +40,13 @@ def _timedelta_to_dota_timer(
     """Convert an itertable of Python timedelta objects into a string of joined
     and delineated DotA-type timers. Single-digit values are zero-padded."""
     return sep.join(
-        ":".join((str(j).zfill(2) for j in divmod(i.seconds, SECONDS_IN_A_MINUTE)))
-        for i in arr_of_deltas
+        ":".join(
+            (
+                str(t_unit).zfill(2)
+                for t_unit in divmod(delta.seconds, SECONDS_IN_A_MINUTE)
+            )
+        )
+        for delta in arr_of_deltas
     )
 
 
