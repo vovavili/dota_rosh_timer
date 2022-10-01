@@ -77,7 +77,7 @@ def _get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
         ) as timestamp_file:
             assert datetime.now() > pickle.load(timestamp_file)
 
-        # Load the locally stored cache
+        # Load the locally stored cache, if it exists
         with gzip.open(CACHE_DIR / (constant_type + "_cache.gz"), "rb") as file:
             data = pickle.load(file)
     except (FileNotFoundError, AssertionError):
@@ -147,8 +147,7 @@ def main(
                 times = [timedelta(seconds=int(i)) for i in cooldown]
                 to_track = item_or_ability.replace("_", " ")
         case _:
-            times = []
-            assert ValueError("Unsupported command line argument.")
+            raise ValueError("Unsupported command line argument.")
 
     # Numbers here indicate the approximate location of the DotA timer
     timer = np.asarray(ImageGrab.grab(bbox=(937, 24, 983, 35)))  # NOQA
