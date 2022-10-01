@@ -40,9 +40,8 @@ def _timedelta_to_dota_timer(
     """Convert an itertable of Python timedelta objects into a string of joined
     and delineated DotA-type timers. Single-digit values are zero-padded."""
     return (
-        prefix + " "
-        if prefix
-        else ""
+        prefix
+        + (" " if prefix else "")
         + sep.join(
             ":".join(
                 (
@@ -83,7 +82,7 @@ def main(to_track: ToTrack = typer.Argument(ToTrack.ROSHAN)) -> None:
         [timedelta(minutes=next(minutes_seconds), seconds=next(minutes_seconds))]
         + times
     )
-    pyperclip.copy(_timedelta_to_dota_timer(times, to_track))
+    pyperclip.copy(_timedelta_to_dota_timer(times, prefix=to_track))
 
 
 if __name__ == "__main__":
