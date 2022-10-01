@@ -12,13 +12,13 @@ metrics like glyph, buyback, item and ability cooldowns.
 """
 
 import gzip
+import itertools
 import json
 import pickle
 import string
 from collections.abc import Iterable
 from datetime import datetime, timedelta
 from enum import Enum
-from itertools import accumulate
 from pathlib import Path
 from typing import Final, Optional
 from urllib.request import urlopen
@@ -170,7 +170,7 @@ def main(
     )
 
     minutes_seconds = map(int, timer.split(":"))
-    times = accumulate(
+    times = itertools.accumulate(
         [timedelta(minutes=next(minutes_seconds), seconds=next(minutes_seconds))]
         + times
     )
