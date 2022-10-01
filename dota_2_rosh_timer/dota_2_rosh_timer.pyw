@@ -78,8 +78,8 @@ def _get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
             assert datetime.now() > pickle.load(timestamp_file)
 
         # Load the locally stored cache, if it exists
-        with gzip.open(CACHE_DIR / (constant_type + "_cache.gz"), "rb") as file:
-            data = pickle.load(file)
+        with gzip.open(CACHE_DIR / (constant_type + "_cache.gz"), "rb") as cache_file:
+            data = pickle.load(cache_file)
     except (FileNotFoundError, AssertionError):
         data = json.loads(
             urlopen(
@@ -89,14 +89,16 @@ def _get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
             ).read()
         )
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
-        with gzip.open(CACHE_DIR / (constant_type + "_timestamp.gz"), "wb") as file:
+        with gzip.open(
+            CACHE_DIR / (constant_type + "_timestamp.gz"), "wb"
+        ) as timestamp_file:
             pickle.dump(
                 datetime.now() + timedelta(days=2),
-                file,
+                timestamp_file,
                 protocol=pickle.HIGHEST_PROTOCOL,
             )
-        with gzip.open(CACHE_DIR / (constant_type + "_cache.gz"), "wb") as file:
-            pickle.dump(data, file, protocol=pickle.HIGHEST_PROTOCOL)
+        with gzip.open(CACHE_DIR / (constant_type + "_cache.gz"), "wb") as cache_file:
+            pickle.dump(data, cache_file, protocol=pickle.HIGHEST_PROTOCOL)
     try:
         return data[item_or_ability]["cd"]
     except KeyError as error:
