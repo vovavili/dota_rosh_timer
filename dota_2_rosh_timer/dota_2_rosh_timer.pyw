@@ -35,14 +35,14 @@ class ToTrack(str, Enum):
 
 
 def _timedelta_to_dota_timer(
-    arr_of_deltas: Iterable[timedelta], prefix: str = "", sep: str = " -> "
+    arr_of_deltas: Iterable[timedelta], prefix: str = "", timers_sep: str = " -> "
 ) -> str:
     """Convert an itertable of Python timedelta objects into a string of joined
     and delineated DotA-type timers. Single-digit values are zero-padded."""
     return (
         prefix
         + (" " if prefix else "")
-        + sep.join(
+        + timers_sep.join(
             ":".join(
                 (
                     str(time_unit).zfill(2)
