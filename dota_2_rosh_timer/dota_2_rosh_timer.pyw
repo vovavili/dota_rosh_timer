@@ -14,7 +14,6 @@ metrics like glyph and buyback cooldowns.
 import gzip
 import json
 import pickle
-import re
 from collections.abc import Iterable
 from datetime import datetime, timedelta
 from enum import Enum
@@ -57,7 +56,9 @@ def _timedelta_to_dota_timer(
             ":".join(
                 (
                     str(time_unit).zfill(2)
-                    for time_unit in divmod(delta.total_seconds(), SECONDS_IN_A_MINUTE)
+                    for time_unit in divmod(
+                        int(delta.total_seconds()), SECONDS_IN_A_MINUTE
+                    )
                 )
             )
             for delta in arr_of_deltas
@@ -150,9 +151,9 @@ def main(
 
     # Numbers here indicate the approximate location of the DotA timer
     timer = np.asarray(ImageGrab.grab(bbox=(937, 24, 983, 35)))  # NOQA
-    timer = easyocr.Reader(["en"]).readtext(timer)[0][1].strip()
-    timer = re.sub(r"\W", ":", timer)
-    timer = re.sub(r"[^\d:]", "", timer)
+    timer = (
+        easyocr.Reader(["en"]).readtext(timer, allowlist="0123456789:")[0][1].strip()
+    )
 
     minutes_seconds = map(int, timer.split(":"))
     times = accumulate(
