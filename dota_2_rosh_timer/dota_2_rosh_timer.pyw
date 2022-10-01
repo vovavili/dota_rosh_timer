@@ -147,7 +147,8 @@ def main(
                 times = [timedelta(seconds=int(i)) for i in cooldown]
                 to_track = item_or_ability.replace("_", " ")
         case _:
-            raise ValueError("Unsupported command line argument.")
+            raise ValueError("Unsupported command line argument. Please use `--help` for "
+                             "all supported commands.")
 
     # Numbers here indicate the approximate location of the DotA timer
     timer = np.asarray(ImageGrab.grab(bbox=(937, 24, 983, 35)))  # NOQA
