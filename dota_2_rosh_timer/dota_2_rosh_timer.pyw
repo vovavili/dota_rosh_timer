@@ -12,6 +12,7 @@ metrics like glyph and buyback cooldowns.
 """
 
 import re
+from collections.abc import Iterable
 from datetime import timedelta
 from enum import Enum
 from itertools import accumulate
@@ -33,11 +34,14 @@ class ToTrack(str, Enum):
     BUYBACK = "buyback"
 
 
-def _timedelta_to_dota_timer(time_delta: timedelta) -> str:
-    """Convert Python timedelta objects into a string of DotA-type timers.
-    Single-digit values are zero-padded."""
-    return ":".join(
-        (str(i).zfill(2) for i in divmod(time_delta.seconds, SECONDS_IN_A_MINUTE))
+def _timedelta_to_dota_timer(
+    arr_of_deltas: Iterable[timedelta], sep: str = " -> "
+) -> str:
+    """Convert an itertable of Python timedelta objects into a string of joined
+    and delineated DotA-type timers. Single-digit values are zero-padded."""
+    return sep.join(
+        ":".join((str(j).zfill(2) for j in divmod(i.seconds, SECONDS_IN_A_MINUTE)))
+        for i in arr_of_deltas
     )
 
 
@@ -69,8 +73,8 @@ def main(to_track: ToTrack = typer.Argument(ToTrack.ROSHAN)) -> None:
         [timedelta(minutes=next(minutes_seconds), seconds=next(minutes_seconds))]
         + times
     )
-    times = map(_timedelta_to_dota_timer, times)
-    pyperclip.copy(to_track + " " + " -> ".join(times))
+    times = _timedelta_to_dota_timer(times)
+    pyperclip.copy(to_track + " " + times)
 
 
 if __name__ == "__main__":
