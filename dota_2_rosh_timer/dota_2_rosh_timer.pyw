@@ -76,7 +76,7 @@ def main(to_track: ToTrack = typer.Argument(ToTrack.ROSHAN)) -> None:
     timer = np.asarray(ImageGrab.grab(bbox=(937, 24, 983, 35)))  # NOQA
     timer = easyocr.Reader(["en"]).readtext(timer)[0][1].strip()
     timer = re.sub(r"\W", ":", timer)
-    timer = re.sub(r"\D", "", timer)
+    timer = re.sub(r"[^0-9:]", "", timer)
 
     minutes_seconds = map(int, timer.split(":"))
     times = accumulate(
