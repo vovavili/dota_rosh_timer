@@ -11,7 +11,6 @@ By default, this tracks the Roshan timer. One can also specify command line argu
 metrics like glyph, buyback, item and ability cooldowns.
 """
 
-import contextlib
 import gzip
 import json
 import pickle
@@ -88,12 +87,10 @@ def _get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
         with gzip.open(CACHE_DIR / (constant_type + "_cache.gz"), "rb") as cache_file:
             data = pickle.load(cache_file)
     except (FileNotFoundError, AssertionError):
-        with contextlib.closing(
-            urlopen(
-                "https://raw.githubusercontent.com/odota/dotaconstants/master/build/"
-                + constant_type
-                + ".json"
-            )
+        with urlopen(
+            "https://raw.githubusercontent.com/odota/dotaconstants/master/build/"
+            + constant_type
+            + ".json"
         ) as opendota_link:
             data = json.loads(opendota_link.read())
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
