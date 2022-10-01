@@ -57,7 +57,7 @@ def _timedelta_to_dota_timer(
             ":".join(
                 (
                     str(time_unit).zfill(2)
-                    for time_unit in divmod(delta.seconds, SECONDS_IN_A_MINUTE)
+                    for time_unit in divmod(delta.total_seconds(), SECONDS_IN_A_MINUTE)
                 )
             )
             for delta in arr_of_deltas
