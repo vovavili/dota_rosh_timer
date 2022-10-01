@@ -22,6 +22,7 @@ import numpy as np
 import pyperclip
 import typer
 from PIL import ImageGrab
+from typer import Argument
 
 SECONDS_IN_A_MINUTE = 60
 
@@ -54,8 +55,8 @@ def _timedelta_to_dota_timer(
     )
 
 
-def main(to_track: ToTrack = typer.Argument(ToTrack.ROSHAN)) -> None:
-    """The main function. One can pass an argument to track other metrics here."""
+def main(to_track: ToTrack = Argument(ToTrack.ROSHAN)) -> None:
+    """The main function. One can pass a command-line argument to track other metrics here."""
     to_track = to_track.casefold().strip()
     match to_track:
         case ToTrack.ROSHAN:
