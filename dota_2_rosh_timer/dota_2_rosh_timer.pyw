@@ -164,10 +164,9 @@ def main(
     timer = np.asarray(ImageGrab.grab(bbox=(937, 24, 983, 35)))  # NOQA
     timer = easyocr.Reader(["en"]).readtext(timer, allowlist=string.digits + ":")[0][1]
 
-    minutes_seconds = map(int, timer.split(":"))
+    timer = map(int, timer.split(":"))
     times = itertools.accumulate(
-        [timedelta(minutes=next(minutes_seconds), seconds=next(minutes_seconds))]
-        + times
+        [timedelta(minutes=next(timer), seconds=next(timer))] + times
     )
     pyperclip.copy(
         timedelta_to_dota_timer(times, timers_sep=timers_sep, prefix=to_track)
