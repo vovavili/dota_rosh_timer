@@ -41,6 +41,17 @@ class ToTrack(str, Enum):
     ITEM = "item"
     ABILITY = "ability"
 
+    @property
+    def plural(self) -> str:
+        """Get a pluralized form of the string."""
+        match self:
+            case ToTrack.ITEM:
+                return "items"
+            case ToTrack.ABILITY:
+                return "abilities"
+            case _:
+                raise NotImplementedError
+
 
 class TimersSep(str, Enum):
     """All the valid timers separators."""
@@ -151,9 +162,7 @@ def main(
         case ToTrack.BUYBACK:
             times = [timedelta(minutes=8)]
         case ToTrack.ITEM | ToTrack.ABILITY:
-            cooldown = get_cooldowns(
-                "items" if to_track == ToTrack.ITEM else "abilities", item_or_ability
-            )
+            cooldown = get_cooldowns(to_track.plural, item_or_ability)
             to_track = item_or_ability.replace("_", " ")
             if isinstance(cooldown, int):
                 times = [timedelta(seconds=cooldown)]
