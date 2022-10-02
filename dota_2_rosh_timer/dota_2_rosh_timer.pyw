@@ -20,7 +20,7 @@ from collections.abc import Iterable
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Final, Optional
+from typing import Final, Optional, Literal
 from urllib.request import urlopen
 
 import easyocr
@@ -45,7 +45,7 @@ class ToTrack(str, Enum):
 
 
 def _timedelta_to_dota_timer(
-    arr_of_deltas: Iterable[timedelta], prefix: str = "", timers_sep: str = " -> "
+    arr_of_deltas: Iterable[timedelta], timers_sep: Literal[" -> ", " || "], prefix: str = ""
 ) -> str:
     """Convert an itertable of Python timedelta objects into a string of joined
     and delineated DotA-type timers. Single-digit values are zero-padded."""
@@ -128,9 +128,9 @@ def main(
 ) -> None:
     """The main function. One can pass a command-line argument to track other metrics here."""
     typer.echo("Running...")
-    to_track = to_track.casefold().strip()
+    to_track = to_track.casefold()
     if item_or_ability is not None:
-        item_or_ability = item_or_ability.casefold().strip()
+        item_or_ability = item_or_ability.casefold()
     timers_sep = " -> "
     match to_track:
         case ToTrack.ROSHAN:
@@ -171,7 +171,7 @@ def main(
         + times
     )
     pyperclip.copy(
-        _timedelta_to_dota_timer(times, prefix=to_track, timers_sep=timers_sep)
+        _timedelta_to_dota_timer(times, timers_sep=timers_sep, prefix=to_track)  # NOQA
     )
     typer.secho("Done!", fg=typer.colors.GREEN)
 
