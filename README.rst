@@ -50,13 +50,14 @@ Credits
 This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template. All the heavy
 lifting is done with EasyOCR_ and OpenDotA_.
 
+License
+-------
+MIT_
+
 .. _AutoHotKey: https://www.autohotkey.com/docs/commands/Run.htm
 .. _Python: https://www.python.org/downloads/
 .. _EasyOCR: https://github.com/JaidedAI/EasyOCR
 .. _OpenDota: https://www.opendota.com/
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
-
-License
--------
-MIT
+.. _MIT: https://github.com/vovavili/dota_rosh_timer/blob/master/LICENSE
