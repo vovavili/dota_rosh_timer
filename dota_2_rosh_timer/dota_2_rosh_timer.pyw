@@ -20,7 +20,7 @@ from collections.abc import Iterable
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Final, Optional, Literal
+from typing import Final, Optional
 from urllib.request import urlopen
 
 import easyocr
@@ -33,13 +33,20 @@ CACHE_DIR: Final[Path] = Path().absolute() / "cache"
 
 
 class ToTrack(str, Enum):
-    """All the possible main function arguments."""
+    """All the valid main function arguments."""
 
     ROSHAN = "roshan"
     GLYPH = "glyph"
     BUYBACK = "buyback"
     ITEM = "item"
     ABILITY = "ability"
+
+
+class TimersSep(str, Enum):
+    """All the valid timers separators."""
+
+    ARROW = " -> "
+    PIPE = " || "
 
 
 def seconds_to_minutes(delta: timedelta) -> tuple[int, int]:
@@ -49,7 +56,7 @@ def seconds_to_minutes(delta: timedelta) -> tuple[int, int]:
 
 def timedelta_to_dota_timer(
     arr_of_deltas: Iterable[timedelta],
-    timers_sep: Literal[" -> ", " || "],
+    timers_sep: TimersSep,
     prefix: str = "",
 ) -> str:
     """Convert an itertable of Python timedelta objects into a string of joined
@@ -131,8 +138,7 @@ def main(
     to_track = to_track.casefold()
     if item_or_ability is not None:
         item_or_ability = item_or_ability.casefold()
-    # I need to cast a type here due to an old-standing bug in PyCharm with literal arguments
-    timers_sep: Literal[" -> "] = " -> "
+    timers_sep = TimersSep.ARROW
     match to_track:
         case ToTrack.ROSHAN:
             times = [
@@ -152,7 +158,7 @@ def main(
             if isinstance(cooldown, int):
                 times = [timedelta(seconds=cooldown)]
             else:
-                timers_sep: Literal[" || "] = " || "
+                timers_sep = TimersSep.PIPE
                 times = [timedelta(seconds=int(i)) for i in cooldown]
         case _:
             raise ValueError(
