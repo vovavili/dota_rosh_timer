@@ -133,7 +133,8 @@ def main(
     to_track = to_track.casefold()
     if item_or_ability is not None:
         item_or_ability = item_or_ability.casefold()
-    timers_sep = " -> "
+    # I need to cast a type here due to an old-standing bug in PyCharm with literal arguments
+    timers_sep: Literal[" -> "] = " -> "
     match to_track:
         case ToTrack.ROSHAN:
             times = [
@@ -154,7 +155,7 @@ def main(
             if isinstance(cooldown, int):
                 times = [timedelta(seconds=cooldown)]
             else:
-                timers_sep = " || "
+                timers_sep: Literal[" || "] = " || "
                 times = [timedelta(seconds=int(i)) for i in cooldown]
                 to_track = item_or_ability.replace("_", " ")
         case _:
@@ -173,7 +174,7 @@ def main(
         + times
     )
     pyperclip.copy(
-        _timedelta_to_dota_timer(times, timers_sep=timers_sep, prefix=to_track)  # NOQA
+        _timedelta_to_dota_timer(times, timers_sep=timers_sep, prefix=to_track)
     )
     typer.secho("Done!", fg=typer.colors.GREEN)
 
