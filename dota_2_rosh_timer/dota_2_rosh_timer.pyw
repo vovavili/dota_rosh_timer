@@ -28,7 +28,6 @@ import numpy as np
 import pyperclip
 import typer
 from PIL import ImageGrab
-from typer import Argument
 
 CACHE_DIR: Final[Path] = Path().absolute() / "cache"
 
@@ -116,12 +115,12 @@ def _get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
 
 
 def main(
-    to_track: ToTrack = Argument(
+    to_track: ToTrack = typer.Argument(
         ToTrack.ROSHAN,
         help="Specify the kind of information you want to track. If no argument "
         "is specified, Roshan death time is tracked.",
     ),
-    item_or_ability: Optional[str] = Argument(
+    item_or_ability: Optional[str] = typer.Argument(
         None,
         help="Specify the cooldown of what item or ability you want to track. "
         "For abilities, make sure to prefix the hero name (e.g. `faceless_void_chronosphere`).",
