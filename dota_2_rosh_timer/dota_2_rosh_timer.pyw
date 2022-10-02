@@ -42,12 +42,12 @@ class ToTrack(str, Enum):
     ABILITY = "ability"
 
 
-def _seconds_to_minutes(delta: timedelta) -> tuple[int, int]:
+def seconds_to_minutes(delta: timedelta) -> tuple[int, int]:
     """Convert a timedelta into a tuple of total minutes and remaining seconds."""
     return divmod(int(delta.total_seconds()), 60)
 
 
-def _timedelta_to_dota_timer(
+def timedelta_to_dota_timer(
     arr_of_deltas: Iterable[timedelta],
     timers_sep: Literal[" -> ", " || "],
     prefix: str = "",
@@ -59,14 +59,14 @@ def _timedelta_to_dota_timer(
         + (" " if prefix else "")
         + timers_sep.join(
             ":".join(
-                (str(time_unit).zfill(2) for time_unit in _seconds_to_minutes(delta))
+                (str(time_unit).zfill(2) for time_unit in seconds_to_minutes(delta))
             )
             for delta in arr_of_deltas
         )
     )
 
 
-def _get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
+def get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
     """A shorthand for querying cooldowns from the OpenDota constants database. To reduce the load
     on GitHub servers and waste less traffic, queries are cached and are updated every other day."""
     try:
@@ -145,7 +145,7 @@ def main(
         case ToTrack.BUYBACK:
             times = [timedelta(minutes=8)]
         case ToTrack.ITEM | ToTrack.ABILITY:
-            cooldown = _get_cooldowns(
+            cooldown = get_cooldowns(
                 "items" if to_track == ToTrack.ITEM else "abilities", item_or_ability
             )
             to_track = item_or_ability.replace("_", " ")
@@ -170,7 +170,7 @@ def main(
         + times
     )
     pyperclip.copy(
-        _timedelta_to_dota_timer(times, timers_sep=timers_sep, prefix=to_track)
+        timedelta_to_dota_timer(times, timers_sep=timers_sep, prefix=to_track)
     )
     typer.secho("Done!", fg=typer.colors.GREEN)
 
