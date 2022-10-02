@@ -163,11 +163,7 @@ def main(
 
     # Numbers here indicate the approximate location of the DotA timer
     timer = np.asarray(ImageGrab.grab(bbox=(937, 24, 983, 35)))  # NOQA
-    timer = (
-        easyocr.Reader(["en"])
-        .readtext(timer, allowlist=string.digits + ":")[0][1]
-        .strip()
-    )
+    timer = easyocr.Reader(["en"]).readtext(timer, allowlist=string.digits + ":")[0][1]
 
     minutes_seconds = map(int, timer.split(":"))
     times = itertools.accumulate(
