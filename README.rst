@@ -32,7 +32,7 @@ Installation guide
 #. Install required dependencies by double-clicking on the *setup.py* file.
 #. Set up a macros to run *"rosh_death_timer.pyw"* script using a hotkey of your choice. I either recommend using your specialized mouse and keyboard software or AutoHotKey_.
 #. Additionally, specify other macros to run the same script with ``glyph``, ``buyback``, ``item`` or ``ability`` arguments.
-#. The first run will take significantly longer.
+#. The first run will take significantly longer, as you will have to download required data for OCR.
 
 Contributing
 -------
