@@ -30,7 +30,6 @@ import typer
 from PIL import ImageGrab
 from typer import Argument
 
-SECONDS_IN_A_MINUTE: Final[int] = 60
 CACHE_DIR: Final[Path] = Path().absolute() / "cache"
 
 
@@ -42,6 +41,11 @@ class ToTrack(str, Enum):
     BUYBACK = "buyback"
     ITEM = "item"
     ABILITY = "ability"
+
+
+def _seconds_to_minutes(delta: timedelta) -> tuple[int, int]:
+    """Convert a timedelta into a tuple of total minutes and remaining seconds."""
+    return divmod(int(delta.total_seconds()), 60)
 
 
 def _timedelta_to_dota_timer(
@@ -56,12 +60,7 @@ def _timedelta_to_dota_timer(
         + (" " if prefix else "")
         + timers_sep.join(
             ":".join(
-                (
-                    str(time_unit).zfill(2)
-                    for time_unit in divmod(
-                        int(delta.total_seconds()), SECONDS_IN_A_MINUTE
-                    )
-                )
+                (str(time_unit).zfill(2) for time_unit in _seconds_to_minutes(delta))
             )
             for delta in arr_of_deltas
         )
