@@ -43,6 +43,7 @@ TODO
 * Make this work on screens other than 1920x1080
 * The script runtime takes a couple of seconds. I wonder if that could be improved?
 * Adding a more informative trackers for level of hero abilities would be neat, as now the script just gives out an information for all levels.
+* Add unit tests.
 
 Credits
 -------
