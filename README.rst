@@ -26,7 +26,7 @@ And, with the help `OpenDotA's DotA 2 constants API <https://github.com/odota/do
 Installation guide
 --------
 
-#. Install Python_. Make sure not to untick the box to register Python directory in your PATH variable.
+#. Install Python_, version 3.10 or above. Make sure not to untick the box to register Python directory in your PATH variable.
 #. Open a Windows Terminal from the Start menu and copy-paste the following command: ``pip install setuptools --user``
 #. Download and extract this repository using *Code -> Download ZIP* button at the top of this page, slightly to the right.
 #. Install required dependencies by double-clicking on the *setup.py* file.
