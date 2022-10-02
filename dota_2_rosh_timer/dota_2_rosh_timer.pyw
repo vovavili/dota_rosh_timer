@@ -146,18 +146,16 @@ def main(
             times = [timedelta(minutes=5)]
         case ToTrack.BUYBACK:
             times = [timedelta(minutes=8)]
-        case ToTrack.ITEM:
-            cooldown = _get_cooldowns("items", item_or_ability)
-            times = [timedelta(seconds=cooldown)]
+        case ToTrack.ITEM | ToTrack.ABILITY:
+            cooldown = _get_cooldowns(
+                "items" if to_track is ToTrack.ITEM else "abilities", item_or_ability
+            )
             to_track = item_or_ability.replace("_", " ")
-        case ToTrack.ABILITY:
-            cooldown = _get_cooldowns("abilities", item_or_ability)
             if isinstance(cooldown, int):
                 times = [timedelta(seconds=cooldown)]
             else:
                 timers_sep: Literal[" || "] = " || "
                 times = [timedelta(seconds=int(i)) for i in cooldown]
-                to_track = item_or_ability.replace("_", " ")
         case _:
             raise ValueError(
                 "Unsupported command line argument. Please use `--help` for "
