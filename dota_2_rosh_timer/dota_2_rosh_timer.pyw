@@ -148,7 +148,7 @@ def main(
             times = [timedelta(minutes=8)]
         case ToTrack.ITEM | ToTrack.ABILITY:
             cooldown = _get_cooldowns(
-                "items" if to_track is ToTrack.ITEM else "abilities", item_or_ability
+                "items" if to_track == ToTrack.ITEM else "abilities", item_or_ability
             )
             to_track = item_or_ability.replace("_", " ")
             if isinstance(cooldown, int):
