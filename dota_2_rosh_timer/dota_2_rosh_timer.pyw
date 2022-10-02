@@ -67,14 +67,14 @@ def seconds_to_minutes(delta: timedelta) -> tuple[int, int]:
 
 def timedelta_to_dota_timer(
     arr_of_deltas: Iterable[timedelta],
+    prefix: str,
     timers_sep: TimersSep,
-    prefix: str = "",
 ) -> str:
     """Convert an itertable of Python timedelta objects into a string of joined
     and delineated DotA-type timers. Single-digit values are zero-padded."""
     return (
         prefix
-        + (" " if prefix else "")
+        + " "
         + timers_sep.join(
             ":".join(
                 (str(time_unit).zfill(2) for time_unit in seconds_to_minutes(delta))
@@ -184,7 +184,7 @@ def main(
         [timedelta(minutes=next(timer), seconds=next(timer))] + times
     )
     pyperclip.copy(
-        timedelta_to_dota_timer(times, timers_sep=timers_sep, prefix=to_track)
+        timedelta_to_dota_timer(times, prefix=to_track, timers_sep=timers_sep)
     )
     typer.secho("Done!", fg=typer.colors.GREEN)
 
