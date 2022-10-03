@@ -20,6 +20,7 @@ import string
 from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta
 from enum import Enum
+from functools import wraps
 from typing import Optional, ParamSpec, TypeVar
 from urllib.request import urlopen
 
@@ -65,6 +66,7 @@ def enter_subdir(subdir: str) -> Callable[P, T]:
     """During the execution of a function, temporarily enter a subdirectory."""
 
     def decorator(function: Callable[P, T]) -> Callable[P, T]:
+        @wraps(function)
         def wrapper(*args, **kwargs) -> T:
             os.makedirs(subdir, exist_ok=True)
             os.chdir(subdir)
