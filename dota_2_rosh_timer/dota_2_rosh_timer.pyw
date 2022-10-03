@@ -17,7 +17,7 @@ import json
 import os
 import pickle
 import string
-from collections.abc import Iterable, Callable
+from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Optional, ParamSpec, TypeVar
@@ -29,8 +29,8 @@ import pyperclip
 import typer
 from PIL import ImageGrab
 
-T = TypeVar('T')
-P = ParamSpec('P')
+T = TypeVar("T")
+P = ParamSpec("P")
 
 
 class ToTrack(str, Enum):
