@@ -11,10 +11,10 @@ By default, this tracks the Roshan timer. One can also specify command line argu
 metrics like glyph, buyback, item and ability cooldowns.
 """
 
-import os
 import gzip
 import itertools
 import json
+import os
 import pickle
 import string
 from collections.abc import Iterable
