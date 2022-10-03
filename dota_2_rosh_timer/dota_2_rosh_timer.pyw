@@ -69,7 +69,7 @@ class EnterSubdir(ContextDecorator):
         os.makedirs(self.subdir, exist_ok=True)
         os.chdir(self.subdir)
 
-    def __exit__(self, *exc):
+    def __exit__(self, *exc) -> None:
         os.chdir("..")
 
 
