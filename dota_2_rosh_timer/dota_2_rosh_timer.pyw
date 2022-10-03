@@ -11,6 +11,7 @@ By default, this tracks the Roshan timer. One can also specify command line argu
 metrics like glyph, buyback, item and ability cooldowns.
 """
 
+import os
 import gzip
 import itertools
 import json
@@ -19,8 +20,7 @@ import string
 from collections.abc import Iterable
 from datetime import datetime, timedelta
 from enum import Enum
-from pathlib import Path
-from typing import Final, Optional
+from typing import Optional
 from urllib.request import urlopen
 
 import easyocr
@@ -28,8 +28,6 @@ import numpy as np
 import pyperclip
 import typer
 from PIL import ImageGrab
-
-CACHE_DIR: Final[Path] = Path().absolute() / "cache"
 
 
 class ToTrack(str, Enum):
@@ -93,15 +91,15 @@ def get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
         raise AssertionError(
             "Missing item or ability command line parameter."
         ) from error
+    os.makedirs("cache", exist_ok=True)
+    os.chdir("cache")
     try:
         # Check whether the locally stored cache needs an update
-        with gzip.open(
-            CACHE_DIR / (constant_type + "_timestamp.gz"), "rb"
-        ) as timestamp_file:
+        with gzip.open(constant_type + "_timestamp.gz", "rb") as timestamp_file:
             assert datetime.now() > pickle.load(timestamp_file)
 
         # Load the locally stored cache, if it exists
-        with gzip.open(CACHE_DIR / (constant_type + "_cache.gz"), "rb") as cache_file:
+        with gzip.open(constant_type + "_cache.gz", "rb") as cache_file:
             data = pickle.load(cache_file)
     except (FileNotFoundError, AssertionError):
         with urlopen(
@@ -110,17 +108,15 @@ def get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
             + ".json"
         ) as opendota_link:
             data = json.loads(opendota_link.read())
-        CACHE_DIR.mkdir(parents=True, exist_ok=True)
-        with gzip.open(
-            CACHE_DIR / (constant_type + "_timestamp.gz"), "wb"
-        ) as timestamp_file:
+        with gzip.open(constant_type + "_timestamp.gz", "wb") as timestamp_file:
             pickle.dump(
                 datetime.now() + timedelta(days=2),
                 timestamp_file,
                 protocol=pickle.HIGHEST_PROTOCOL,
             )
-        with gzip.open(CACHE_DIR / (constant_type + "_cache.gz"), "wb") as cache_file:
+        with gzip.open(constant_type + "_cache.gz", "wb") as cache_file:
             pickle.dump(data, cache_file, protocol=pickle.HIGHEST_PROTOCOL)
+    os.chdir("..")
     try:
         return data[item_or_ability]["cd"]
     except KeyError as error:
