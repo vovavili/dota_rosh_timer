@@ -17,11 +17,10 @@ import json
 import os
 import pickle
 import string
-from collections.abc import Iterable
-from contextlib import ContextDecorator
+from collections.abc import Iterable, Callable
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Optional
+from typing import Optional, ParamSpec, TypeVar
 from urllib.request import urlopen
 
 import easyocr
@@ -29,6 +28,9 @@ import numpy as np
 import pyperclip
 import typer
 from PIL import ImageGrab
+
+T = TypeVar('T')
+P = ParamSpec('P')
 
 
 class ToTrack(str, Enum):
@@ -59,18 +61,20 @@ class TimersSep(str, Enum):
     PIPE = " || "
 
 
-class EnterSubdir(ContextDecorator):
+def enter_subdir(subdir: str) -> Callable[P, T]:
     """During the execution of a function, temporarily enter a subdirectory."""
 
-    def __init__(self, subdir: str) -> None:
-        self.subdir = subdir
+    def decorator(function: Callable[P, T]) -> Callable[P, T]:
+        def wrapper(*args, **kwargs) -> T:
+            os.makedirs(subdir, exist_ok=True)
+            os.chdir(subdir)
+            result = function(*args, **kwargs)
+            os.chdir("..")
+            return result
 
-    def __enter__(self) -> None:
-        os.makedirs(self.subdir, exist_ok=True)
-        os.chdir(self.subdir)
+        return wrapper
 
-    def __exit__(self, *exc) -> None:
-        os.chdir("..")
+    return decorator
 
 
 def seconds_to_minutes(delta: timedelta) -> tuple[int, int]:
@@ -97,7 +101,7 @@ def timedelta_to_dota_timer(
     )
 
 
-@EnterSubdir("cache")
+@enter_subdir("cache")
 def get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
     """A shorthand for querying cooldowns from the OpenDota constants database. To reduce the load
     on GitHub servers and waste less traffic, queries are cached and are updated every other day."""
