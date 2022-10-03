@@ -18,6 +18,7 @@ import os
 import pickle
 import string
 from collections.abc import Iterable
+from contextlib import ContextDecorator
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Optional
@@ -58,6 +59,20 @@ class TimersSep(str, Enum):
     PIPE = " || "
 
 
+class EnterSubdir(ContextDecorator):
+    """During the execution of a function, temporarily enter a subdirectory."""
+
+    def __init__(self, subdir: str) -> None:
+        self.subdir = subdir
+
+    def __enter__(self) -> None:
+        os.makedirs(self.subdir, exist_ok=True)
+        os.chdir(self.subdir)
+
+    def __exit__(self, *exc):
+        os.chdir("..")
+
+
 def seconds_to_minutes(delta: timedelta) -> tuple[int, int]:
     """Convert a timedelta into a tuple of total minutes and remaining seconds."""
     return divmod(int(delta.total_seconds()), 60)
@@ -82,6 +97,7 @@ def timedelta_to_dota_timer(
     )
 
 
+@EnterSubdir("cache")
 def get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
     """A shorthand for querying cooldowns from the OpenDota constants database. To reduce the load
     on GitHub servers and waste less traffic, queries are cached and are updated every other day."""
@@ -91,8 +107,6 @@ def get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
         raise AssertionError(
             "Missing item or ability command line parameter."
         ) from error
-    os.makedirs("cache", exist_ok=True)
-    os.chdir("cache")
     try:
         # Check whether the locally stored cache needs an update
         with gzip.open(constant_type + "_timestamp.gz", "rb") as timestamp_file:
@@ -116,7 +130,6 @@ def get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
             )
         with gzip.open(constant_type + "_cache.gz", "wb") as cache_file:
             pickle.dump(data, cache_file, protocol=pickle.HIGHEST_PROTOCOL)
-    os.chdir("..")
     try:
         return data[item_or_ability]["cd"]
     except KeyError as error:
