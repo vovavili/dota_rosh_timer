@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 DotA 2 Roshan death timer macros, using computer vision. Tracks expiration time, minimum
 and maximum respawn timer as contents of your clipboard. Handy in combination with Win+V
