@@ -14,6 +14,7 @@ metrics like glyph, buyback, item and ability cooldowns.
 
 import gzip
 import itertools
+import json
 import os
 import pickle
 import string
@@ -28,7 +29,6 @@ from urllib.request import urlopen
 import easyocr
 import numpy as np
 import pyperclip
-import simdjson
 import typer
 from PIL import ImageGrab
 
@@ -125,7 +125,7 @@ def timedelta_to_dota_timer(
 @enter_subdir("cache")
 def get_cooldowns(
     constant_type: str, item_or_ability: Optional[str]
-) -> str | Iterable[str]:
+) -> int | list[str]:
     """A shorthand for querying cooldowns from the OpenDota constants database. To reduce the load
     on GitHub servers and waste less traffic, queries are cached and are updated every other day."""
     try:
@@ -149,7 +149,7 @@ def get_cooldowns(
             + ".json"
         ) as opendota_link:
             try:
-                data = simdjson.Parser().parse(opendota_link.read())
+                data = json.loads(opendota_link.read())
             except HTTPError as error:
                 raise ValueError(
                     f'Constant type "{constant_type}" does not exist in '
@@ -195,8 +195,8 @@ def main(
         case ToTrack.ITEM | ToTrack.ABILITY:
             cooldown = get_cooldowns(to_track.plural, item_or_ability)
             to_track = item_or_ability.replace("_", " ")
-            if isinstance(cooldown, str):
-                times = [timedelta(seconds=int(cooldown))]
+            if isinstance(cooldown, int):
+                times = [timedelta(seconds=cooldown)]
             else:
                 timers_sep = TimersSep.PIPE
                 times = [timedelta(seconds=int(i)) for i in cooldown]
