@@ -209,8 +209,8 @@ def main(
     timer = timer[0][1]  # Position of the most likely return value from EasyOCR query
     if ":" not in timer:
         timer = f"{timer[:-2]}:{timer[-2:]}"
-    timer = map(int, timer.split(":"))
-    timer = [timedelta(minutes=next(timer), seconds=next(timer))]
+    minutes, seconds = map(int, timer.split(":"))
+    timer = [timedelta(minutes=minutes, seconds=seconds)]
     times = (
         itertools.accumulate(timer + times)
         if timers_sep is TimersSep.ARROW
