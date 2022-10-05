@@ -130,7 +130,7 @@ def get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
         assert item_or_ability is not None
     except AssertionError as error:
         raise AssertionError(
-            "Missing item or ability command line parameter."
+            f"Missing item or ability command line parameter for constant type {constant_type}."
         ) from error
     try:
         # Check whether the locally stored cache needs an update
