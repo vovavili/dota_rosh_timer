@@ -98,9 +98,12 @@ def enter_subdir(subdir: str) -> Callable[[Callable[P, T]], Callable[P, T]]:
     return decorator
 
 
-def seconds_to_minutes(delta: timedelta) -> tuple[int, int]:
-    """Convert a timedelta into a tuple of total minutes and remaining seconds."""
-    return divmod(int(delta.total_seconds()), 60)
+def seconds_to_minutes(delta: timedelta) -> str:
+    """Convert a timedelta into a tuple of total minutes and remaining seconds. Seconds
+    are zero-padded."""
+    delta = [str(t) for t in divmod(int(delta.total_seconds()), 60)]
+    delta[-1] = delta[-1].zfill(2)
+    return ":".join(delta)
 
 
 def timedelta_to_dota_timer(
@@ -109,17 +112,8 @@ def timedelta_to_dota_timer(
     timers_sep: TimersSep,
 ) -> str:
     """Convert an itertable of Python timedelta objects into a string of joined
-    and delineated DotA-type timers. Single-digit values are zero-padded."""
-    return (
-        prefix
-        + " "
-        + timers_sep.join(
-            ":".join(
-                (str(time_unit).zfill(2) for time_unit in seconds_to_minutes(delta))
-            )
-            for delta in arr_of_deltas
-        )
-    )
+    and delineated DotA-type timers."""
+    return prefix + " " + timers_sep.join(map(seconds_to_minutes, arr_of_deltas))
 
 
 @enter_subdir("cache")
