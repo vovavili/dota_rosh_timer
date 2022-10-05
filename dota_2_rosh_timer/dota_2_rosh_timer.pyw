@@ -55,6 +55,23 @@ class ToTrack(str, Enum):
             case _:
                 raise NotImplementedError
 
+    @property
+    def times(self) -> list[timedelta]:
+        """Get corresponding time splits for a constant."""
+        match self:
+            case ToTrack.ROSHAN:
+                return [
+                    timedelta(minutes=5),
+                    timedelta(minutes=3),
+                    timedelta(minutes=3),
+                ]
+            case ToTrack.GLYPH:
+                return [timedelta(minutes=5)]
+            case ToTrack.BUYBACK:
+                return [timedelta(minutes=8)]
+            case _:
+                raise NotImplementedError
+
 
 class TimersSep(str, Enum):
     """All the valid timers separators."""
@@ -167,16 +184,8 @@ def main(
         item_or_ability = item_or_ability.casefold()
     timers_sep = TimersSep.ARROW
     match to_track:
-        case ToTrack.ROSHAN:
-            times = [
-                timedelta(minutes=5),
-                timedelta(minutes=3),
-                timedelta(minutes=3),
-            ]
-        case ToTrack.GLYPH:
-            times = [timedelta(minutes=5)]
-        case ToTrack.BUYBACK:
-            times = [timedelta(minutes=8)]
+        case ToTrack.ROSHAN | ToTrack.GLYPH | ToTrack.BUYBACK:
+            times = to_track.times
         case ToTrack.ITEM | ToTrack.ABILITY:
             cooldown = get_cooldowns(to_track.plural, item_or_ability)
             to_track = item_or_ability.replace("_", " ")
