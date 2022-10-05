@@ -23,6 +23,7 @@ from datetime import datetime, timedelta
 from enum import Enum
 from functools import wraps
 from typing import Optional, ParamSpec, TypeVar
+from urllib.error import HTTPError
 from urllib.request import urlopen
 
 import easyocr
@@ -145,7 +146,13 @@ def get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
             + constant_type
             + ".json"
         ) as opendota_link:
-            data = json.loads(opendota_link.read())
+            try:
+                data = json.loads(opendota_link.read())
+            except HTTPError as error:
+                raise ValueError(
+                    f'Constant type "{constant_type}" does not exist in '
+                    f"the OpenDotA constants database."
+                ) from error
         with gzip.open(constant_type + "_timestamp.gz", "wb") as timestamp_file:
             pickle.dump(
                 datetime.now() + timedelta(days=2),
