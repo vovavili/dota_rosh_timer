@@ -81,7 +81,7 @@ class TimersSep(str, Enum):
     PIPE = " || "
 
 
-def enter_subdir(subdir: str) -> Callable[P, T]:
+def enter_subdir(subdir: str) -> Callable[[Callable[P, T]], Callable[P, T]]:
     """During the execution of a function, temporarily enter a subdirectory."""
 
     def decorator(function: Callable[P, T]) -> Callable[P, T]:
@@ -123,7 +123,9 @@ def timedelta_to_dota_timer(
 
 
 @enter_subdir("cache")
-def get_cooldowns(constant_type: str, item_or_ability: str) -> int | list[str]:
+def get_cooldowns(
+    constant_type: str, item_or_ability: Optional[str]
+) -> int | list[str]:
     """A shorthand for querying cooldowns from the OpenDota constants database. To reduce the load
     on GitHub servers and waste less traffic, queries are cached and are updated every other day."""
     try:
