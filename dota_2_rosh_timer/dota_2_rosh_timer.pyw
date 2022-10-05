@@ -222,9 +222,7 @@ def main(
         times = itertools.accumulate(timer + times)
     else:
         times = timer + [timer[0] + i for i in times]
-    pyperclip.copy(
-        timedelta_to_dota_timer(times, prefix=to_track, timers_sep=timers_sep)
-    )
+    pyperclip.copy(timedelta_to_dota_timer(times, to_track, timers_sep))
     typer.secho("Done!", fg=typer.colors.GREEN)
 
 
