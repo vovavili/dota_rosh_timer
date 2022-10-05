@@ -217,9 +217,11 @@ def main(
     if ":" not in timer:
         timer = f"{timer[:-2]}:{timer[-2:]}"
     timer = map(int, timer.split(":"))
-    times = itertools.accumulate(
-        [timedelta(minutes=next(timer), seconds=next(timer))] + times
-    )
+    timer = [timedelta(minutes=next(timer), seconds=next(timer))]
+    if timers_sep is TimersSep.ARROW:
+        times = itertools.accumulate(timer + times)
+    else:
+        times = timer + [timer[0] + i for i in times]
     pyperclip.copy(
         timedelta_to_dota_timer(times, prefix=to_track, timers_sep=timers_sep)
     )
