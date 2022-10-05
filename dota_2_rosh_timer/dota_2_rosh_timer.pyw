@@ -213,7 +213,7 @@ def main(
     while not (timer := reader.readtext(screenshot, allowlist=string.digits + ":")):
         if next(retries) > 10:
             raise ValueError("Too many retries, OCR can't recognize characters.")
-    timer = timer[0][1]
+    timer = timer[0][1]  # Position of most likely return value from EasyOCR query
     if ":" not in timer:
         timer = f"{timer[:-2]}:{timer[-2:]}"
     timer = map(int, timer.split(":"))
