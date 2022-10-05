@@ -218,10 +218,11 @@ def main(
         timer = f"{timer[:-2]}:{timer[-2:]}"
     timer = map(int, timer.split(":"))
     timer = [timedelta(minutes=next(timer), seconds=next(timer))]
-    if timers_sep is TimersSep.ARROW:
-        times = itertools.accumulate(timer + times)
-    else:
-        times = timer + [timer[0] + i for i in times]
+    times = (
+        itertools.accumulate(timer + times)
+        if timers_sep is TimersSep.ARROW
+        else timer + [timer[0] + i for i in times]
+    )
     pyperclip.copy(timedelta_to_dota_timer(times, to_track, timers_sep))
     typer.secho("Done!", fg=typer.colors.GREEN)
 
