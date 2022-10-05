@@ -188,9 +188,6 @@ def main(
 ) -> None:
     """The main function. One can pass a command-line argument to track other metrics here."""
     typer.echo("Running...")
-    to_track = ToTrack(to_track.casefold())
-    if item_or_ability is not None:
-        item_or_ability = item_or_ability.casefold()
     timers_sep = TimersSep.ARROW
     match to_track:
         case ToTrack.ROSHAN | ToTrack.GLYPH | ToTrack.BUYBACK:
@@ -211,8 +208,14 @@ def main(
 
     # Numbers here indicate the approximate location of the DotA timer
     timer = np.asarray(ImageGrab.grab(bbox=(937, 24, 983, 35)))  # NOQA
-    timer = easyocr.Reader(["en"]).readtext(timer, allowlist=string.digits + ":")[0][1]
-
+    retries = itertools.count(1)
+    reader = easyocr.Reader(["en"])
+    while not (timer := reader.readtext(timer, allowlist=string.digits + ":")):
+        if next(retries) > 10:
+            raise ValueError("Too many retries, OCR can't recognize characters.")
+    timer = timer[0][1]
+    if ":" not in timer:
+        timer = f"{timer[:-2]}:{timer[-2:]}"
     timer = map(int, timer.split(":"))
     times = itertools.accumulate(
         [timedelta(minutes=next(timer), seconds=next(timer))] + times
