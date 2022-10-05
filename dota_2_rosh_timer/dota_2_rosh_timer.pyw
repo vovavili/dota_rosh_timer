@@ -99,8 +99,7 @@ def enter_subdir(subdir: str) -> Callable[[Callable[P, T]], Callable[P, T]]:
 
 
 def seconds_to_minutes(delta: timedelta) -> str:
-    """Convert a timedelta into a tuple of total minutes and remaining seconds. Seconds
-    are zero-padded."""
+    """Convert a timedelta into a DotA timer string. Seconds are zero-padded."""
     delta = [str(t) for t in divmod(int(delta.total_seconds()), 60)]
     delta[-1] = delta[-1].zfill(2)
     return ":".join(delta)
