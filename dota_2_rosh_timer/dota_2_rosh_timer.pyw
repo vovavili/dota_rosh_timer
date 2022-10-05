@@ -199,7 +199,7 @@ def main(
                 times = [timedelta(seconds=cooldown)]
             else:
                 timers_sep = TimersSep.PIPE
-                times = [timedelta(seconds=int(i)) for i in cooldown]
+                times = [timedelta(seconds=int(delta)) for delta in cooldown]
         case _:
             raise ValueError(
                 "Unsupported command line argument. Please use `--help` for "
@@ -221,7 +221,7 @@ def main(
     times = (
         itertools.accumulate(timer + times)
         if timers_sep is TimersSep.ARROW
-        else timer + [timer[0] + i for i in times]
+        else timer + [timer[0] + delta for delta in times]
     )
     pyperclip.copy(timedelta_to_dota_timer(times, to_track, timers_sep))
     typer.secho("Done!", fg=typer.colors.GREEN)
