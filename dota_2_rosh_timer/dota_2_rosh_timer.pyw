@@ -98,21 +98,21 @@ def enter_subdir(subdir: str) -> Callable[[Callable[P, T]], Callable[P, T]]:
     return decorator
 
 
-def seconds_to_minutes(delta: timedelta) -> str:
+def timedelta_to_dota_timer(delta: timedelta) -> str:
     """Convert a timedelta into a DotA timer string. Seconds are zero-padded."""
     delta = [str(t) for t in divmod(int(delta.total_seconds()), 60)]
     delta[-1] = delta[-1].zfill(2)
     return ":".join(delta)
 
 
-def timedelta_to_dota_timer(
+def process_timedeltas(
     arr_of_deltas: Iterable[timedelta],
     prefix: str,
     timers_sep: TimersSep,
 ) -> str:
     """Convert an itertable of Python timedelta objects into a string of joined
     and delineated DotA-type timers."""
-    return prefix + " " + timers_sep.join(map(seconds_to_minutes, arr_of_deltas))
+    return prefix + " " + timers_sep.join(map(timedelta_to_dota_timer, arr_of_deltas))
 
 
 @enter_subdir("cache")
@@ -216,7 +216,7 @@ def main(
         if timers_sep is TimersSep.ARROW
         else timer + [timer[0] + delta for delta in times]
     )
-    pyperclip.copy(timedelta_to_dota_timer(times, to_track, timers_sep))
+    pyperclip.copy(process_timedeltas(times, to_track, timers_sep))
     typer.secho("Done!", fg=typer.colors.GREEN)
 
 
