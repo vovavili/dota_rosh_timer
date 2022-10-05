@@ -110,8 +110,8 @@ def process_timedeltas(
     prefix: str,
     timers_sep: TimersSep,
 ) -> str:
-    """Convert an itertable of Python timedelta objects into a string of joined
-    and delineated DotA-type timers."""
+    """Convert an itertable of timedeltas into a string of joined and delineated
+    DotA-type timers."""
     return prefix + " " + timers_sep.join(map(timedelta_to_dota_timer, arr_of_deltas))
 
 
