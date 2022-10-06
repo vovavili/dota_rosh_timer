@@ -15,28 +15,13 @@ Use on your own risk.
 
 By default (``dota_2_rosh_timer.pyw``), this tracks the Roshan timer. One can also specify command line arguments to track:
 
-
-.. code-block:: python
-   :caption: Glyph cooldown
-
-    dota_2_rosh_timer.pyw glyph
-
-.. code-block:: python
-   :caption: Buyback cooldown
-
-    dota_2_rosh_timer.pyw buyback
-
+* Glyph cooldown: ``dota_2_rosh_timer.pyw glyph``
+* Buyback cooldown: ``dota_2_rosh_timer.pyw buyback``
 And, with the help `OpenDotA's DotA 2 constants API <https://github.com/odota/dotaconstants>`_, one can also track the following:
 
-.. code-block:: python
-   :caption: Item cooldown
+* Item cooldown: e.g. ``dota_2_rosh_timer.pyw item black_king_bar``
+* Abilities cooldown: e.g. ``dota_2_rosh_timer.pyw ability faceless_void_chronosphere``
 
-    dota_2_rosh_timer.pyw item black_king_bar
-
-.. code-block:: python
-   :caption: Abilities cooldown
-
-    dota_2_rosh_timer.pyw ability faceless_void_chronosphere
 
 Installation guide
 --------
