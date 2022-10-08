@@ -172,6 +172,7 @@ def screenshot_dota_timer() -> np.ndarray:
     info = next(s for s in screeninfo.get_monitors() if s.is_primary)
     width, height = info.width, info.height
 
+    # Numbers here indicate the approximate location of the DotA timer in fractions
     bbox = [
         int(i)
         for i in [
@@ -216,8 +217,7 @@ def main(
                 "a list of all supported commands."
             )
 
-    # Numbers here indicate the approximate location of the DotA timer
-    img = np.asarray(ImageGrab.grab(bbox=(937, 24, 983, 35)))  # NOQA
+    img = screenshot_dota_timer()
     retries = itertools.count(1)
     reader = easyocr.Reader(["en"])
     while not (timer := reader.readtext(img, detail=0, allowlist=string.digits + ":")):
