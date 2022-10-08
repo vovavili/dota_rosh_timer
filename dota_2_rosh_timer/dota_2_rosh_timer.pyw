@@ -12,11 +12,8 @@ By default, this tracks the Roshan timer. One can also specify command line argu
 metrics like glyph, buyback, item and ability cooldowns.
 """
 
-import gzip
 import itertools
-import json
 import os
-import pickle
 import string
 from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta
@@ -29,6 +26,7 @@ from urllib.request import urlopen
 import easyocr
 import numpy as np
 import pyperclip
+import simdjson
 import typer
 from PIL import ImageGrab
 
@@ -118,7 +116,7 @@ def process_timedeltas(
 @enter_subdir("cache")
 def get_cooldowns(
     constant_type: str, item_or_ability: Optional[str]
-) -> int | list[str]:
+) -> str | Iterable[str]:
     """A shorthand for querying cooldowns from the OpenDota constants database. To reduce the load
     on GitHub servers and waste less traffic, queries are cached and are updated every other day."""
     try:
@@ -127,35 +125,34 @@ def get_cooldowns(
         raise AssertionError(
             f"Missing item or ability command line parameter for constant type {constant_type}."
         ) from error
+    data = dict()
+    parser = simdjson.Parser()
     try:
         # Check whether the locally stored cache needs an update
-        with gzip.open(constant_type + "_timestamp.gz", "rb") as timestamp_file:
-            assert datetime.now() > pickle.load(timestamp_file)
+        timestamp = parser.load(constant_type + "_timestamp.json")
+        assert datetime.now() < datetime.fromisoformat(timestamp)
 
         # Load the locally stored cache, if it exists
-        with gzip.open(constant_type + "_cache.gz", "rb") as cache_file:
-            data = pickle.load(cache_file)
-    except (FileNotFoundError, AssertionError):
+        data = parser.load(constant_type + "_cache.json")
+    except (FileNotFoundError, OSError, AssertionError):
         with urlopen(
             "https://raw.githubusercontent.com/odota/dotaconstants/master/build/"
             + constant_type
             + ".json"
         ) as opendota_link:
             try:
-                data = json.loads(opendota_link.read())
+                data = parser.parse(opendota_link.read())
             except HTTPError as error:
                 raise ValueError(
                     f'Constant type "{constant_type}" does not exist in '
                     f"the OpenDotA constants database."
                 ) from error
-        with gzip.open(constant_type + "_timestamp.gz", "wb") as timestamp_file:
-            pickle.dump(
-                datetime.now() + timedelta(days=2),
-                timestamp_file,
-                protocol=pickle.HIGHEST_PROTOCOL,
-            )
-        with gzip.open(constant_type + "_cache.gz", "wb") as cache_file:
-            pickle.dump(data, cache_file, protocol=pickle.HIGHEST_PROTOCOL)
+        with open(constant_type + "_timestamp.json", 'w') as f:
+            timestamp = datetime.now() + timedelta(days=2)
+            timestamp = simdjson.dumps(timestamp.isoformat())
+            f.write(timestamp)
+        with open(constant_type + "_cache.json", 'wb') as f:
+            f.write(data.mini)  # NOQA
     try:
         return data[item_or_ability]["cd"]
     except KeyError as error:
@@ -188,8 +185,8 @@ def main(
         case ToTrack.ITEM | ToTrack.ABILITY:
             cooldown = get_cooldowns(to_track.plural, item_or_ability)
             to_track = item_or_ability.replace("_", " ")
-            if isinstance(cooldown, int):
-                times = [timedelta(seconds=cooldown)]
+            if isinstance(cooldown, str):
+                times = [timedelta(seconds=int(cooldown))]
             else:
                 timers_sep = TimersSep.PIPE
                 times = [timedelta(seconds=int(delta)) for delta in cooldown]
