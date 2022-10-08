@@ -125,8 +125,7 @@ def get_cooldowns(
         raise AssertionError(
             f"Missing item or ability command line parameter for constant type {constant_type}."
         ) from error
-    data = dict()
-    parser = simdjson.Parser()
+    data, parser = {}, simdjson.Parser()
     try:
         # Check whether the locally stored cache needs an update
         timestamp = parser.load(constant_type + "_timestamp.json")
@@ -147,12 +146,12 @@ def get_cooldowns(
                     f'Constant type "{constant_type}" does not exist in '
                     f"the OpenDotA constants database."
                 ) from error
-        with open(constant_type + "_timestamp.json", 'w') as f:
+        with open(constant_type + "_timestamp.json", "w", encoding="utf-8") as file:
             timestamp = datetime.now() + timedelta(days=2)
             timestamp = simdjson.dumps(timestamp.isoformat())
-            f.write(timestamp)
-        with open(constant_type + "_cache.json", 'wb') as f:
-            f.write(data.mini)  # NOQA
+            file.write(timestamp)
+        with open(constant_type + "_cache.json", "wb") as file:
+            file.write(data.mini)  # NOQA
     try:
         return data[item_or_ability]["cd"]
     except KeyError as error:
@@ -185,7 +184,7 @@ def main(
         case ToTrack.ITEM | ToTrack.ABILITY:
             cooldown = get_cooldowns(to_track.plural, item_or_ability)
             to_track = item_or_ability.replace("_", " ")
-            if isinstance(cooldown, str):
+            if isinstance(cooldown, str | int):
                 times = [timedelta(seconds=int(cooldown))]
             else:
                 timers_sep = TimersSep.PIPE
