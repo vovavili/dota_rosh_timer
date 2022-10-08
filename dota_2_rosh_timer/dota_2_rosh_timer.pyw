@@ -118,7 +118,8 @@ def get_cooldowns(
     constant_type: str, item_or_ability: Optional[str]
 ) -> str | Iterable[str]:
     """A shorthand for querying cooldowns from the OpenDota constants database. To reduce the load
-    on GitHub servers and waste less traffic, queries are cached and are updated every other day."""
+    on GitHub servers and waste less traffic, queries are cached and are updated every other day.
+    Caching is done with simdjson, an extremely fast JSON reading library."""
     try:
         assert item_or_ability is not None
     except AssertionError as error:
