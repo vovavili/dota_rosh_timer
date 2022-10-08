@@ -200,10 +200,12 @@ def main(
     screenshot = np.asarray(ImageGrab.grab(bbox=(937, 24, 983, 35)))  # NOQA
     retries = itertools.count(1)
     reader = easyocr.Reader(["en"])
-    while not (timer := reader.readtext(screenshot, allowlist=string.digits + ":")):
+    while not (
+        timer := reader.readtext(screenshot, detail=0, allowlist=string.digits + ":")
+    ):
         if next(retries) > 10:
             raise ValueError("Too many retries, OCR can't recognize characters.")
-    timer = timer[0][1]  # Position of the most likely return value from EasyOCR query
+    timer = timer[0]
     if ":" not in timer:
         timer = f"{timer[:-2]}:{timer[-2:]}"
     minutes, seconds = map(int, timer.split(":"))
