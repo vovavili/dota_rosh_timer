@@ -212,10 +212,7 @@ def main(
                 timers_sep = TimersSep.PIPE
                 times = [timedelta(seconds=int(delta)) for delta in cooldown]
         case _:
-            raise ValueError(
-                "Unsupported command line argument. Please use `--help` for "
-                "a list of all supported commands."
-            )
+            raise NotImplementedError
 
     img = screenshot_dota_timer()
     retries = itertools.count(1)
