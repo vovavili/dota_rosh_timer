@@ -177,9 +177,9 @@ def screenshot_dota_timer() -> np.ndarray:
         int(i)
         for i in [
             width * Fraction(39, 80),
-            height * Fraction(1, 45),
+            height // 45,
             width * Fraction(41, 80),
-            height * Fraction(1, 30),
+            height // 30,
         ]
     ]
     return np.asarray(ImageGrab.grab(bbox=bbox))  # NOQA
