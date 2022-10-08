@@ -18,7 +18,6 @@ import string
 from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta
 from enum import Enum
-from fractions import Fraction
 from functools import wraps
 from typing import Optional, ParamSpec, TypeVar
 from urllib.error import HTTPError
@@ -170,18 +169,16 @@ def screenshot_dota_timer() -> np.ndarray:
     """Get the screenshot of the DotA timer, regardless of screen size
     and operating system. Only tested for 1920x1080 monitor."""
     info = next(s for s in screeninfo.get_monitors() if s.is_primary)
-    width, height = info.width, info.height
+    half_width, height = info.width // 2, info.height
+    offset = half_width // 40
 
     # Numbers here indicate the approximate location of the DotA timer in fractions
-    bbox = [
-        int(i)
-        for i in [
-            width * Fraction(39, 80),
-            height // 45,
-            width * Fraction(41, 80),
-            height // 30,
-        ]
-    ]
+    bbox = (
+        half_width - offset,
+        height // 45,
+        half_width + offset,
+        height // 30,
+    )
     return np.asarray(ImageGrab.grab(bbox=bbox))  # NOQA
 
 
