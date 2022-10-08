@@ -2,7 +2,7 @@
 """
 DotA 2 Roshan death timer macros, using computer vision. Tracks expiration time, minimum
 and maximum respawn timer as contents of your clipboard. Handy in combination with Win+V
-clipboard hotkey. Should work on any 1920x1080 screen.
+clipboard hotkey. Should work on any 1920x1080 screen, other monitor sizes not tested.
 
 You may or may not get VAC-banned for using this in your games, though I presume that a ban
 is unlikely as you are not interacting with DotA files in any direct or indirect way.
@@ -18,6 +18,7 @@ import string
 from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta
 from enum import Enum
+from fractions import Fraction
 from functools import wraps
 from typing import Optional, ParamSpec, TypeVar
 from urllib.error import HTTPError
@@ -26,6 +27,7 @@ from urllib.request import urlopen
 import easyocr
 import numpy as np
 import pyperclip
+import screeninfo
 import simdjson
 import typer
 from PIL import ImageGrab
@@ -162,6 +164,24 @@ def get_cooldowns(
             "Make sure to prefix the hero name for abilities "
             "(e.g. `faceless_void_chronosphere`)."
         ) from error
+
+
+def screenshot_dota_timer() -> np.ndarray:
+    """Get the screenshot of the DotA timer, regardless of screen size.
+    Only tested for 1920x1080 monitor."""
+    info = next(s for s in screeninfo.get_monitors() if s.is_primary)
+    width, height = info.width, info.height
+
+    bbox = [
+        int(i)
+        for i in [
+            width * Fraction(39, 80),
+            height * Fraction(1, 45),
+            width * Fraction(41, 80),
+            height * Fraction(1, 30),
+        ]
+    ]
+    return np.asarray(ImageGrab.grab(bbox=bbox))  # NOQA
 
 
 def main(

@@ -8,7 +8,7 @@ DotA 2 Roshan Death Timer
 
 DotA 2 Roshan death timer macros, using computer vision. Tracks expiration time, minimum and
 maximum respawn timer as contents of your clipboard. Handy in combination with `Win+V <https://support.microsoft.com/en-us/windows/clipboard-in-windows-c436501e-985d-1c8d-97ea-fe46ddf338c6>`_ clipboard hotkey.
-Should work on any 1920x1080 screen.
+Should work on any 1920x1080 screen, other monitor sizes not tested.
 
 You may or may not get VAC-banned for using this in your games, though I *presume* that a ban is unlikely as you are not interacting with DotA files in any direct or indirect way.
 Use on your own risk.
@@ -40,7 +40,6 @@ Pull requests are always welcome.
 
 TODO
 -------
-* Make this work on screens other than 1920x1080
 * Improve script runtime and accuracy by providing my own training model, using Tensorflow Object Detection API.
 * Adding a more informative trackers for level of hero abilities would be neat, as now the script just gives out an information for all levels.
 * Add unit tests.
