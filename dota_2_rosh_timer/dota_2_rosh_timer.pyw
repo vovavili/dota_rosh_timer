@@ -167,8 +167,8 @@ def get_cooldowns(
 
 
 def screenshot_dota_timer() -> np.ndarray:
-    """Get the screenshot of the DotA timer, regardless of screen size.
-    Only tested for 1920x1080 monitor."""
+    """Get the screenshot of the DotA timer, regardless of screen size
+    and operating system. Only tested for 1920x1080 monitor."""
     info = next(s for s in screeninfo.get_monitors() if s.is_primary)
     width, height = info.width, info.height
 
