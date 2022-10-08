@@ -197,12 +197,10 @@ def main(
             )
 
     # Numbers here indicate the approximate location of the DotA timer
-    screenshot = np.asarray(ImageGrab.grab(bbox=(937, 24, 983, 35)))  # NOQA
+    img = np.asarray(ImageGrab.grab(bbox=(937, 24, 983, 35)))  # NOQA
     retries = itertools.count(1)
     reader = easyocr.Reader(["en"])
-    while not (
-        timer := reader.readtext(screenshot, detail=0, allowlist=string.digits + ":")
-    ):
+    while not (timer := reader.readtext(img, detail=0, allowlist=string.digits + ":")):
         if next(retries) > 10:
             raise ValueError("Too many retries, OCR can't recognize characters.")
     timer = timer[0]
