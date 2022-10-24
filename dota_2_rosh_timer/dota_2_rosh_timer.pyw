@@ -120,7 +120,7 @@ def process_timedeltas(
     prefix += " "
     if isinstance(timers_sep, TimersSep):
         return prefix + timers_sep.join(times)
-    return prefix + TimersSep.ARROW.join(i + " " + j for i, j in zip(timers_sep, times))
+    return prefix + TimersSep.ARROW.join(" ".join(i) for i in zip(timers_sep, times))
 
 
 @enter_subdir("cache")
