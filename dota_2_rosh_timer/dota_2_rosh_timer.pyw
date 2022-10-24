@@ -206,8 +206,7 @@ def main(
 ) -> None:
     """The main function. One can pass a command-line argument to track other metrics here."""
     typer.echo("Running...")
-    timers_sep = TimersSep.ARROW
-    sep_prefix = None
+    timers_sep, sep_prefix = TimersSep.ARROW, None
     match to_track:
         case ToTrack.ROSHAN | ToTrack.GLYPH | ToTrack.BUYBACK:
             times = to_track.times
