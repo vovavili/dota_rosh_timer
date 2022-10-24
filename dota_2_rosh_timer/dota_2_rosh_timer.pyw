@@ -112,15 +112,16 @@ def timedelta_to_dota_timer(delta: timedelta) -> str:
 def process_timedeltas(
     arr_of_deltas: Iterable[timedelta],
     prefix: str,
-    timers_sep: TimersSep | list[str],
+    timers_sep: TimersSep,
+    sep_prefix: list[str] | None,
 ) -> str:
     """Convert an itertable of timedeltas into a string of joined and delineated
     DotA-type timers."""
     times = map(timedelta_to_dota_timer, arr_of_deltas)
     prefix += " "
-    if isinstance(timers_sep, TimersSep):
+    if sep_prefix is None:
         return prefix + timers_sep.join(times)
-    return prefix + TimersSep.ARROW.join(" ".join(i) for i in zip(timers_sep, times))
+    return prefix + timers_sep.join(" ".join(i) for i in zip(sep_prefix, times))
 
 
 @enter_subdir("cache")
@@ -206,11 +207,12 @@ def main(
     """The main function. One can pass a command-line argument to track other metrics here."""
     typer.echo("Running...")
     timers_sep = TimersSep.ARROW
+    sep_prefix = None
     match to_track:
         case ToTrack.ROSHAN | ToTrack.GLYPH | ToTrack.BUYBACK:
             times = to_track.times
             if to_track is ToTrack.ROSHAN:
-                timers_sep = timers_sep.roshan
+                sep_prefix = timers_sep.roshan
         case ToTrack.ITEM | ToTrack.ABILITY:
             cooldown = get_cooldowns(to_track.plural, item_or_ability)
             to_track = item_or_ability.replace("_", " ")
@@ -238,7 +240,7 @@ def main(
         if timers_sep is not TimersSep.PIPE
         else timer + [timer[0] + delta for delta in times]
     )
-    pyperclip.copy(process_timedeltas(times, to_track, timers_sep))
+    pyperclip.copy(process_timedeltas(times, to_track, timers_sep, sep_prefix))
     typer.secho("Done!", fg=typer.colors.GREEN)
 
 
