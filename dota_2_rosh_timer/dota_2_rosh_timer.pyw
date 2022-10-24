@@ -209,11 +209,10 @@ def main(
     typer.echo("Running...")
     timers_sep = TimersSep.ARROW
     match to_track:
-        case ToTrack.GLYPH | ToTrack.BUYBACK:
+        case ToTrack.ROSHAN | ToTrack.GLYPH | ToTrack.BUYBACK:
             times = to_track.times
-        case ToTrack.ROSHAN:
-            times = to_track.times
-            timers_sep = timers_sep.roshan
+            if to_track is ToTrack.ROSHAN:
+                timers_sep = timers_sep.roshan
         case ToTrack.ITEM | ToTrack.ABILITY:
             cooldown = get_cooldowns(to_track.plural, item_or_ability)
             to_track = item_or_ability.replace("_", " ")
