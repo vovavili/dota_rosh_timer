@@ -79,6 +79,11 @@ class TimersSep(str, Enum):
     ARROW = " -> "
     PIPE = " || "
 
+    @property
+    def roshan(self) -> list[str]:
+        """Separators for timing Roshan death."""
+        return ["kill", "exp", "min", "max"]
+
 
 def enter_subdir(subdir: str) -> Callable[[Callable[P, T]], Callable[P, T]]:
     """During the execution of a function, temporarily enter a subdirectory."""
@@ -107,11 +112,17 @@ def timedelta_to_dota_timer(delta: timedelta) -> str:
 def process_timedeltas(
     arr_of_deltas: Iterable[timedelta],
     prefix: str,
-    timers_sep: TimersSep,
+    timers_sep: TimersSep | list[str],
 ) -> str:
     """Convert an itertable of timedeltas into a string of joined and delineated
     DotA-type timers."""
-    return prefix + " " + timers_sep.join(map(timedelta_to_dota_timer, arr_of_deltas))
+    times = map(timedelta_to_dota_timer, arr_of_deltas)
+    prefix += " "
+    if isinstance(timers_sep, TimersSep):
+        return prefix + timers_sep.join(times)
+    return prefix + " ".join(
+        f"{i} {j}{TimersSep.ARROW}" for i, j in zip(timers_sep, times)
+    ).removesuffix(TimersSep.ARROW)
 
 
 @enter_subdir("cache")
@@ -198,8 +209,11 @@ def main(
     typer.echo("Running...")
     timers_sep = TimersSep.ARROW
     match to_track:
-        case ToTrack.ROSHAN | ToTrack.GLYPH | ToTrack.BUYBACK:
+        case ToTrack.GLYPH | ToTrack.BUYBACK:
             times = to_track.times
+        case ToTrack.ROSHAN:
+            times = to_track.times
+            timers_sep = timers_sep.roshan
         case ToTrack.ITEM | ToTrack.ABILITY:
             cooldown = get_cooldowns(to_track.plural, item_or_ability)
             to_track = item_or_ability.replace("_", " ")
@@ -224,7 +238,7 @@ def main(
     timer = [timedelta(minutes=minutes, seconds=seconds)]
     times = (
         itertools.accumulate(timer + times)
-        if timers_sep is TimersSep.ARROW
+        if timers_sep is not TimersSep.PIPE
         else timer + [timer[0] + delta for delta in times]
     )
     pyperclip.copy(process_timedeltas(times, to_track, timers_sep))
