@@ -236,7 +236,7 @@ def main(
     timer = [timedelta(minutes=minutes, seconds=seconds)]
     times = (
         itertools.accumulate(timer + times)
-        if timers_sep is not TimersSep.PIPE
+        if timers_sep is TimersSep.ARROW
         else timer + [timer[0] + delta for delta in times]
     )
     pyperclip.copy(process_timedeltas(times, to_track, timers_sep, sep_prefix))
