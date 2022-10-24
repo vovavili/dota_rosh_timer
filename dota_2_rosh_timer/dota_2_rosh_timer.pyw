@@ -80,9 +80,9 @@ class TimersSep(str, Enum):
     PIPE = " || "
 
     @property
-    def roshan(self) -> list[str]:
+    def roshan(self) -> tuple[str, ...]:
         """Separators for timing Roshan death."""
-        return ["kill", "exp", "min", "max"]
+        return "kill", "exp", "min", "max"
 
 
 def enter_subdir(subdir: str) -> Callable[[Callable[P, T]], Callable[P, T]]:
