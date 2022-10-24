@@ -121,7 +121,7 @@ def process_timedeltas(
     prefix += " "
     if sep_prefix is None:
         return prefix + timers_sep.join(times)
-    return prefix + timers_sep.join(" ".join(i) for i in zip(sep_prefix, times))
+    return prefix + timers_sep.join(" ".join(t) for t in zip(sep_prefix, times))
 
 
 @enter_subdir("cache")
