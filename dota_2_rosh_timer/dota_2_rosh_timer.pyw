@@ -118,10 +118,9 @@ def process_timedeltas(
     """Convert an itertable of timedeltas into a string of joined and delineated
     DotA-type timers."""
     times = map(timedelta_to_dota_timer, arr_of_deltas)
-    prefix += " "
-    if sep_prefix is None:
-        return prefix + timers_sep.join(times)
-    return prefix + timers_sep.join(" ".join(t) for t in zip(sep_prefix, times))
+    if sep_prefix is not None:
+        times = (" ".join(t) for t in zip(sep_prefix, times))
+    return prefix + " " + timers_sep.join(times)
 
 
 @enter_subdir("cache")
