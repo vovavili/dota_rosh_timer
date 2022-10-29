@@ -125,7 +125,7 @@ def process_timedeltas(
 
 @enter_subdir("cache")
 def get_cooldowns(
-    constant_type: str, item_or_ability: Optional[str]
+    constant_type: str, item_or_ability: str | None
 ) -> str | Iterable[str]:
     """A shorthand for querying cooldowns from the OpenDota constants database. To reduce the load
     on GitHub servers and waste less traffic, queries are cached and are updated every other day.
