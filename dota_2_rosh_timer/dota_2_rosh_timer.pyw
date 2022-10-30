@@ -23,7 +23,7 @@ from typing import Optional, ParamSpec, TypeVar
 from urllib.error import HTTPError
 from urllib.request import urlopen
 
-import cv2
+import cv2 as cv
 import easyocr
 import numpy as np
 import numpy.typing as npt
@@ -190,11 +190,11 @@ def screenshot_dota_timer() -> npt.NDArray[np.uint8]:
     # Blend in daytime indicator color into the dark background
     yellow_min = np.array([140, 115, 75], np.uint8)
     yellow_max = np.array([160, 135, 95], np.uint8)
-    mask = cv2.inRange(img, yellow_min, yellow_max)
+    mask = cv.inRange(img, yellow_min, yellow_max)
     img[mask > 0] = (67, 71, 67)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img = cv2.resize(img, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
-    return cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+    img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+    img = cv.resize(img, None, fx=3, fy=3, interpolation=cv.INTER_CUBIC)
+    return cv.threshold(img, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)[1]
 
 
 def main(
