@@ -30,7 +30,7 @@ Installation guide
 #. Open a Windows Terminal from the Start menu and copy-paste the following command: ``pip install setuptools --user``
 #. Download and extract this repository using |Code|_ button at the top of this page, slightly to the right.
 #. Install required dependencies by double-clicking on the *setup.py* file.
-#. Set up a macros to run *"rosh_death_timer.pyw"* script using a hotkey of your choice. I either recommend using your specialized mouse and keyboard software or AutoHotKey_.
+#. Set up a macros to run *"rosh_death_timer.pyw"* script using a hotkey of your choice. I recommend either using your specialized mouse and keyboard software or AutoHotKey_.
 #. Additionally, `create a .bat file <https://datatofish.com/batch-python-script/>`_ and specify other macros to run the same script with ``glyph``, ``buyback``, ``item`` or ``ability`` arguments.
 #. The first run will take significantly longer, as you will have to download required data for OCR.
 
