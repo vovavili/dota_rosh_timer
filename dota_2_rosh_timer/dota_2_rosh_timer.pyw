@@ -193,7 +193,8 @@ def screenshot_dota_timer() -> npt.NDArray[np.uint8]:
     mask = cv2.inRange(img, yellow_min, yellow_max)
     img[mask > 0] = (67, 71, 67)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    return cv2.resize(img, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
+    img = cv2.resize(img, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
+    return cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
 
 
 def main(
