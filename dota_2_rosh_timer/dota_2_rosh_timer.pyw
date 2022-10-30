@@ -191,6 +191,8 @@ def screenshot_dota_timer() -> np.ndarray:
     )
     img = np.asarray(ImageGrab.grab(bbox=bbox))  # NOQA
     # Image pre-processing
+    # Remove daytime indicator colors
+    img[np.all(img == (152, 129, 85), axis=-1)] = (53, 56, 54)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img = cv2.resize(img, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
     return img
