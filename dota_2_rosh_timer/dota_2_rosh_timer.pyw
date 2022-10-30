@@ -23,6 +23,7 @@ from typing import Optional, ParamSpec, TypeVar
 from urllib.error import HTTPError
 from urllib.request import urlopen
 
+import cv2
 import easyocr
 import numpy as np
 import pyperclip
@@ -188,7 +189,11 @@ def screenshot_dota_timer() -> np.ndarray:
         half_width + offset,
         height // 30,
     )
-    return np.asarray(ImageGrab.grab(bbox=bbox))  # NOQA
+    img = np.asarray(ImageGrab.grab(bbox=bbox))  # NOQA
+    # Image pre-processing
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img = cv2.resize(img, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
+    return img
 
 
 def main(

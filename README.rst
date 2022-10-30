@@ -40,7 +40,6 @@ Pull requests are always welcome.
 
 TODO
 -------
-* Improve script runtime and accuracy by providing my own training model, using Tensorflow Object Detection API.
 * Adding a more informative trackers for level of hero abilities would be neat, as now the script just gives out an information for all levels.
 * Add unit tests.
 
@@ -48,7 +47,7 @@ Credits
 -------
 
 This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template. All the heavy
-lifting is done with EasyOCR_ and OpenDotA_.
+lifting is done with EasyOCR_, OpenCV_ and OpenDotA_.
 
 License
 -------
@@ -57,6 +56,7 @@ MIT_
 .. _AutoHotKey: https://www.autohotkey.com/docs/commands/Run.htm
 .. _Python: https://www.python.org/downloads/
 .. _EasyOCR: https://github.com/JaidedAI/EasyOCR
+.. _OpenCV: https://opencv.org/
 .. _OpenDota: https://www.opendota.com/
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
