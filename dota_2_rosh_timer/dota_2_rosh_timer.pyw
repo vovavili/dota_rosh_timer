@@ -190,8 +190,7 @@ def screenshot_dota_timer() -> npt.NDArray[np.uint8]:
     # Blend in daytime indicator color into the dark background
     img[np.all(img == (152, 129, 85), axis=-1)] = (53, 56, 54)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img = cv2.resize(img, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
-    return img
+    return cv2.resize(img, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
 
 
 def main(
