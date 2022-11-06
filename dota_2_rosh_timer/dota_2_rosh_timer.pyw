@@ -134,7 +134,7 @@ def process_timedeltas(
     arr_of_deltas: Iterable[timedelta],
     prefix: str,
     timers_sep: TimersSep,
-    sep_prefix: list[str] | None,
+    sep_prefix: Iterable[str] | None,
 ) -> str:
     """Convert an itertable of timedeltas into a string of joined and delineated
     DotA-type timers."""
