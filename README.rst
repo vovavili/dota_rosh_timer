@@ -32,6 +32,7 @@ Installation guide
 #. Install required dependencies by double-clicking on the *setup.py* file.
 #. Set up a macros to run *"rosh_death_timer.pyw"* script using a hotkey of your choice. I recommend either using your specialized mouse and keyboard software or AutoHotKey_.
 #. Additionally, `create a .bat file <https://datatofish.com/batch-python-script/>`_ and specify other macros to run the same script with ``glyph``, ``buyback``, ``item`` or ``ability`` arguments.
+#. Additionally, specify whether you'd like to have an output for Roshan death timer in other languages (Russian, Spanish) with e.g. ``--language russian`` flag.
 #. The first run will take significantly longer, as you will have to download required data for OCR.
 
 Contributing
