@@ -82,6 +82,30 @@ class TimersSep(str, Enum):
     PIPE = " || "
 
 
+class Language(str, Enum):
+    """Languages for Roshan death timer output."""
+
+    ENGLISH = "english"
+    RUSSIAN = "russian"
+    SPANISH = "spanish"
+
+    @property
+    def rosh_death_timer(self) -> tuple[str, ...]:
+        """Get corresponding translation for Roshan death timer output."""
+        match self:
+            case Language.ENGLISH | Language.SPANISH:
+                return (
+                    "kill" if self is Language.ENGLISH else "matar",
+                    "exp",
+                    "min",
+                    "max",
+                )
+            case Language.RUSSIAN:
+                return "уб", "конец", "мин", "макс"
+            case _:
+                raise NotImplementedError
+
+
 def enter_subdir(subdir: str) -> Callable[[Callable[P, T]], Callable[P, T]]:
     """During the execution of a function, temporarily enter a subdirectory."""
 
@@ -126,7 +150,7 @@ def get_cooldowns(
 ) -> str | Iterable[str]:
     """A shorthand for querying cooldowns from the OpenDota constants database. To reduce the load
     on GitHub servers and waste less traffic, queries are cached and are updated every other day.
-    Caching is done with simdjson, an extremely fast JSON reading library."""
+    Caching is done with simdjson, an extremely fast JSON parser."""
     try:
         assert item_or_ability is not None
     except AssertionError as error:
@@ -207,6 +231,11 @@ def main(
         help="Specify the cooldown of what item or ability you want to track. "
         "For abilities, make sure to prefix the hero name (e.g. `faceless_void_chronosphere`).",
     ),
+    language: Language = typer.Option(
+        Language.ENGLISH,
+        help="Specify the output language for Roshan death timer. If no argument "
+        "is specified, English is chosen.",
+    ),
 ) -> None:
     """The main function. One can pass a command-line argument to track other metrics here."""
     typer.echo("Running...")
@@ -215,7 +244,7 @@ def main(
         case ToTrack.ROSHAN | ToTrack.GLYPH | ToTrack.BUYBACK:
             times = to_track.times
             if to_track is ToTrack.ROSHAN:
-                sep_prefix = ("kill", "exp", "min", "max")
+                sep_prefix = language.rosh_death_timer
         case ToTrack.ITEM | ToTrack.ABILITY:
             cooldown = get_cooldowns(to_track.plural, item_or_ability)
             to_track = item_or_ability.replace("_", " ")
