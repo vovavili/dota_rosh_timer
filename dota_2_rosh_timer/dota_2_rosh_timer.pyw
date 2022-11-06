@@ -82,7 +82,8 @@ class ToTrack(str, Enum):
             case ToTrack.BUYBACK:
                 return [timedelta(minutes=8)]
 
-    def rosh_death_timer_translated(self, language: Language) -> tuple[str, ...]:
+    @staticmethod
+    def rosh_death_timer_translated(language: Language) -> tuple[str, ...]:
         """Get corresponding translation for Roshan death timer output."""
         match language:
             case Language.ENGLISH | Language.SPANISH:
