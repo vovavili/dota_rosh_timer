@@ -22,6 +22,7 @@ And, with the help `OpenDotA's DotA 2 constants API <https://github.com/odota/do
 * Item cooldown: e.g. ``dota_2_rosh_timer.pyw item black_king_bar``
 * Abilities cooldown: e.g. ``dota_2_rosh_timer.pyw ability faceless_void_chronosphere``
 
+If needed, the script can also output time splits in Russian or Spanish.
 
 Installation guide
 --------
