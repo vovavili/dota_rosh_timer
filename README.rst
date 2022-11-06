@@ -35,10 +35,6 @@ Installation guide
 #. Additionally, specify whether you'd like to have an output for Roshan death timer in other languages (Russian, Spanish) with e.g. ``--language russian`` flag.
 #. The first run will take significantly longer, as you will have to download required data for OCR.
 
-Contributing
--------
-Pull requests are always welcome.
-
 TODO
 -------
 * Adding a more informative trackers for level of hero abilities would be neat, as now the script just gives out an information for all levels.
