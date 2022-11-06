@@ -101,11 +101,7 @@ class ToTrack(str, Enum):
         """Get a corresponding translation."""
         match self:
             case ToTrack.ROSHAN:
-                match language:
-                    case Language.ENGLISH | Language.SPANISH:
-                        return "roshan"
-                    case Language.RUSSIAN:
-                        return "рошан"
+                return "рошан" if language is Language.RUSSIAN else "roshan"
             case ToTrack.GLYPH:
                 match language:
                     case Language.ENGLISH:
