@@ -105,6 +105,15 @@ class Language(str, Enum):
             case _:
                 raise NotImplementedError
 
+    @property
+    def roshan(self) -> str:
+        """Cyrillic for Roshan."""
+        match self:
+            case Language.RUSSIAN:
+                return "рошан"
+            case _:
+                return "roshan"
+
 
 def enter_subdir(subdir: str) -> Callable[[Callable[P, T]], Callable[P, T]]:
     """During the execution of a function, temporarily enter a subdirectory."""
@@ -249,6 +258,7 @@ def main(
             times = to_track.times
             if to_track is ToTrack.ROSHAN:
                 sep_prefix = language.rosh_death_timer
+                to_track = language.roshan
         case ToTrack.ITEM | ToTrack.ABILITY:
             cooldown = get_cooldowns(to_track.plural, item_or_ability)
             to_track = item_or_ability.replace("_", " ")
