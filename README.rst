@@ -40,6 +40,7 @@ TODO
 -------
 * Adding a more informative trackers for level of hero abilities would be neat, as now the script just gives out an information for all levels.
 * Add unit tests.
+* Internationalize the script using gettext, to follow the established convention.
 
 Credits
 -------
