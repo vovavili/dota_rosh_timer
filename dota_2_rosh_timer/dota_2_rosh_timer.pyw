@@ -87,7 +87,7 @@ class ToTrack(str, Enum):
         match language:
             case Language.ENGLISH | Language.SPANISH:
                 return (
-                    "kill" if self is Language.ENGLISH else "matar",
+                    "kill" if language is Language.ENGLISH else "matar",
                     "exp",
                     "min",
                     "max",
