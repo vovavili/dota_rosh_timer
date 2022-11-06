@@ -37,6 +37,14 @@ T = TypeVar("T")
 P = ParamSpec("P")
 
 
+class Language(str, Enum):
+    """Languages for timer output."""
+
+    ENGLISH = "english"
+    RUSSIAN = "russian"
+    SPANISH = "spanish"
+
+
 class ToTrack(str, Enum):
     """All the valid main function arguments."""
 
@@ -74,25 +82,9 @@ class ToTrack(str, Enum):
             case _:
                 raise NotImplementedError
 
-
-class TimersSep(str, Enum):
-    """All the valid timers separators."""
-
-    ARROW = " -> "
-    PIPE = " || "
-
-
-class Language(str, Enum):
-    """Languages for Roshan death timer output."""
-
-    ENGLISH = "english"
-    RUSSIAN = "russian"
-    SPANISH = "spanish"
-
-    @property
-    def rosh_death_timer(self) -> tuple[str, ...]:
+    def rosh_death_timer_translated(self, language: Language) -> tuple[str, ...]:
         """Get corresponding translation for Roshan death timer output."""
-        match self:
+        match language:
             case Language.ENGLISH | Language.SPANISH:
                 return (
                     "kill" if self is Language.ENGLISH else "matar",
@@ -102,17 +94,41 @@ class Language(str, Enum):
                 )
             case Language.RUSSIAN:
                 return "уб", "конец", "мин", "макс"
+
+    def translated(self, language: Language) -> str:
+        """Get a corresponding translation."""
+        match self:
+            case ToTrack.ROSHAN:
+                match language:
+                    case Language.ENGLISH | Language.SPANISH:
+                        return "roshan"
+                    case Language.RUSSIAN:
+                        return "рошан"
+            case ToTrack.GLYPH:
+                match language:
+                    case Language.ENGLISH:
+                        return "glyph"
+                    case Language.SPANISH:
+                        return "glifo"
+                    case Language.RUSSIAN:
+                        return "глиф"
+            case ToTrack.BUYBACK:
+                match language:
+                    case Language.ENGLISH:
+                        return "buyback"
+                    case Language.SPANISH:
+                        return "resurrección"
+                    case Language.RUSSIAN:
+                        return "выкуп"
             case _:
                 raise NotImplementedError
 
-    @property
-    def roshan(self) -> str:
-        """Cyrillic for Roshan."""
-        match self:
-            case Language.RUSSIAN:
-                return "рошан"
-            case _:
-                return "roshan"
+
+class TimersSep(str, Enum):
+    """All the valid timers separators."""
+
+    ARROW = " -> "
+    PIPE = " || "
 
 
 def enter_subdir(subdir: str) -> Callable[[Callable[P, T]], Callable[P, T]]:
@@ -255,10 +271,10 @@ def main(
     timers_sep, sep_prefix = TimersSep.ARROW, None
     match to_track:
         case ToTrack.ROSHAN | ToTrack.GLYPH | ToTrack.BUYBACK:
-            times = to_track.times
             if to_track is ToTrack.ROSHAN:
-                sep_prefix = language.rosh_death_timer
-                to_track = language.roshan
+                sep_prefix = to_track.rosh_death_timer_translated(language)
+            times = to_track.times
+            to_track = to_track.translated(language)
         case ToTrack.ITEM | ToTrack.ABILITY:
             cooldown = get_cooldowns(to_track.plural, item_or_ability)
             to_track = item_or_ability.replace("_", " ")
