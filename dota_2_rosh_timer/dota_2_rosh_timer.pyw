@@ -4,12 +4,12 @@ DotA 2 Roshan death timer macros, using computer vision. Tracks expiration time,
 and maximum respawn timer as contents of your clipboard. Handy in combination with Win+V
 clipboard hotkey. Should work on any 1920x1080 screen, other monitor sizes not tested.
 
-You may or may not get VAC-banned for using this in your games, though I presume that a ban
-is unlikely as you are not interacting with DotA files in any direct or indirect way.
-Use on your own risk.
+You may or may not get VAC-banned for using this in your games, though I presume that a
+ban is unlikely as you are not interacting with DotA files in any direct or indirect
+way. Use on your own risk.
 
-By default, this tracks the Roshan timer. One can also specify command line arguments to track
-metrics like glyph, buyback, item and ability cooldowns.
+By default, this tracks the Roshan timer. One can also specify command line arguments to
+track metrics like glyph, buyback, item and ability cooldowns.
 """
 
 import itertools
@@ -148,14 +148,16 @@ def process_timedeltas(
 def get_cooldowns(
     constant_type: str, item_or_ability: str | None
 ) -> str | Iterable[str]:
-    """A shorthand for querying cooldowns from the OpenDota constants database. To reduce the load
-    on GitHub servers and waste less traffic, queries are cached and are updated every other day.
-    Caching is done with simdjson, an extremely fast JSON parser."""
+    """A shorthand for querying cooldowns from the OpenDota constants database. To
+    reduce the load on GitHub servers and waste less traffic, queries are cached and
+    are updated every other day. Caching is done with simdjson, an extremely fast JSON
+    parser."""
     try:
         assert item_or_ability is not None
     except AssertionError as error:
         raise AssertionError(
-            f"Missing item or ability command line parameter for constant type {constant_type}."
+            f"Missing item or ability command line parameter for constant type "
+            f"{constant_type}."
         ) from error
     data, parser = {}, simdjson.Parser()
     try:
@@ -229,7 +231,8 @@ def main(
     item_or_ability: Optional[str] = typer.Argument(
         None,
         help="Specify the cooldown of what item or ability you want to track. "
-        "For abilities, make sure to prefix the hero name (e.g. `faceless_void_chronosphere`).",
+        "For abilities, make sure to prefix the hero name "
+        "(e.g. `faceless_void_chronosphere`).",
     ),
     language: Language = typer.Option(
         Language.ENGLISH,
@@ -237,7 +240,8 @@ def main(
         "is specified, English is chosen.",
     ),
 ) -> None:
-    """The main function. One can pass a command-line argument to track other metrics here."""
+    """The main function. One can pass a command-line argument to track other
+    metrics here."""
     typer.echo("Running...")
     timers_sep, sep_prefix = TimersSep.ARROW, None
     match to_track:
