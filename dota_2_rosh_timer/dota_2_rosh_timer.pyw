@@ -21,7 +21,7 @@ from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta
 from enum import Enum
 from functools import wraps
-from typing import Optional, ParamSpec, TypeVar
+from typing import Literal, Optional, ParamSpec, TypeVar
 from urllib.error import HTTPError
 from urllib.request import urlopen
 
@@ -57,18 +57,18 @@ class ToTrack(str, Enum):
     ABILITY = "ability"
 
     @property
-    def plural(self) -> str:
+    def plural(self: Literal[ToTrack.ITEM, ToTrack.ABILITY]) -> str:
         """Get a pluralized form of the string."""
         match self:
             case ToTrack.ITEM:
                 return "items"
             case ToTrack.ABILITY:
                 return "abilities"
-            case _:
-                raise NotImplementedError
 
     @property
-    def times(self) -> list[timedelta]:
+    def times(
+        self: Literal[ToTrack.ROSHAN, ToTrack.GLYPH, ToTrack.BUYBACK]
+    ) -> list[timedelta]:
         """Get corresponding time splits for a constant."""
         match self:
             case ToTrack.ROSHAN:
@@ -81,8 +81,6 @@ class ToTrack(str, Enum):
                 return [timedelta(minutes=5)]
             case ToTrack.BUYBACK:
                 return [timedelta(minutes=8)]
-            case _:
-                raise NotImplementedError
 
     def rosh_death_timer_translated(self, language: Language) -> tuple[str, ...]:
         """Get corresponding translation for Roshan death timer output."""
@@ -97,7 +95,10 @@ class ToTrack(str, Enum):
             case Language.RUSSIAN:
                 return "уб", "конец", "мин", "макс"
 
-    def translated(self, language: Language) -> str:
+    def translated(
+        self: Literal[ToTrack.ROSHAN, ToTrack.GLYPH, ToTrack.BUYBACK],
+        language: Language,
+    ) -> str:
         """Get a corresponding translation."""
         match self:
             case ToTrack.ROSHAN:
@@ -118,8 +119,6 @@ class ToTrack(str, Enum):
                         return "resurrección"
                     case Language.RUSSIAN:
                         return "выкуп"
-            case _:
-                raise NotImplementedError
 
 
 class TimersSep(str, Enum):
