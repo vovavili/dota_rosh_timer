@@ -46,6 +46,20 @@ class Language(str, Enum):
     RUSSIAN = "russian"
     SPANISH = "spanish"
 
+    @property
+    def sep_prefix_roshan(self) -> tuple[str, ...]:
+        """Get corresponding translation for Roshan death time separators."""
+        match self:
+            case Language.ENGLISH | Language.SPANISH:
+                return (
+                    "kill" if self is Language.ENGLISH else "matar",
+                    "exp",
+                    "min",
+                    "max",
+                )
+            case Language.RUSSIAN:
+                return "уб", "конец", "мин", "макс"
+
 
 class ToTrack(str, Enum):
     """All the valid main function arguments."""
@@ -81,20 +95,6 @@ class ToTrack(str, Enum):
                 return [timedelta(minutes=5)]
             case ToTrack.BUYBACK:
                 return [timedelta(minutes=8)]
-
-    @staticmethod
-    def rosh_death_timer_translated(language: Language) -> tuple[str, ...]:
-        """Get corresponding translation for Roshan death timer output."""
-        match language:
-            case Language.ENGLISH | Language.SPANISH:
-                return (
-                    "kill" if language is Language.ENGLISH else "matar",
-                    "exp",
-                    "min",
-                    "max",
-                )
-            case Language.RUSSIAN:
-                return "уб", "конец", "мин", "макс"
 
     def translated(
         self: Literal[ToTrack.ROSHAN, ToTrack.GLYPH, ToTrack.BUYBACK],
@@ -270,7 +270,7 @@ def main(
     match to_track:
         case ToTrack.ROSHAN | ToTrack.GLYPH | ToTrack.BUYBACK:
             if to_track is ToTrack.ROSHAN:
-                sep_prefix = to_track.rosh_death_timer_translated(language)
+                sep_prefix = language.sep_prefix_roshan
             times = to_track.times
             to_track = to_track.translated(language)
         case ToTrack.ITEM | ToTrack.ABILITY:
