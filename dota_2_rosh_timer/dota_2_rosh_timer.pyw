@@ -4,13 +4,15 @@ DotA 2 Roshan death timer macros, using computer vision. Tracks expiration time,
 and maximum respawn timer as contents of your clipboard. Handy in combination with Win+V
 clipboard hotkey. Should work on any 1920x1080 screen, other monitor sizes not tested.
 
-You may or may not get VAC-banned for using this in your games, though I presume that a ban
-is unlikely as you are not interacting with DotA files in any direct or indirect way.
-Use on your own risk.
+You may or may not get VAC-banned for using this in your games, though I presume that a
+ban is unlikely as you are not interacting with DotA files in any direct or indirect
+way. Use on your own risk.
 
-By default, this tracks the Roshan timer. One can also specify command line arguments to track
-metrics like glyph, buyback, item and ability cooldowns.
+By default, this tracks the Roshan timer. One can also specify command line arguments to
+track metrics like glyph, buyback, item and ability cooldowns.
 """
+
+from __future__ import annotations
 
 import itertools
 import os
@@ -19,7 +21,7 @@ from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta
 from enum import Enum
 from functools import wraps
-from typing import Optional, ParamSpec, TypeVar
+from typing import Literal, Optional, ParamSpec, TypeVar
 from urllib.error import HTTPError
 from urllib.request import urlopen
 
@@ -37,6 +39,28 @@ T = TypeVar("T")
 P = ParamSpec("P")
 
 
+class Language(str, Enum):
+    """Languages for timer output."""
+
+    ENGLISH = "english"
+    RUSSIAN = "russian"
+    SPANISH = "spanish"
+
+    @property
+    def sep_prefix_roshan(self) -> tuple[str, ...]:
+        """Get corresponding translation for Roshan death time separators."""
+        match self:
+            case Language.ENGLISH | Language.SPANISH:
+                return (
+                    "kill" if self is Language.ENGLISH else "matar",
+                    "exp",
+                    "min",
+                    "max",
+                )
+            case Language.RUSSIAN:
+                return "уб", "конец", "мин", "макс"
+
+
 class ToTrack(str, Enum):
     """All the valid main function arguments."""
 
@@ -47,18 +71,18 @@ class ToTrack(str, Enum):
     ABILITY = "ability"
 
     @property
-    def plural(self) -> str:
+    def plural(self: Literal[ToTrack.ITEM, ToTrack.ABILITY]) -> str:
         """Get a pluralized form of the string."""
         match self:
             case ToTrack.ITEM:
                 return "items"
             case ToTrack.ABILITY:
                 return "abilities"
-            case _:
-                raise NotImplementedError
 
     @property
-    def times(self) -> list[timedelta]:
+    def times(
+        self: Literal[ToTrack.ROSHAN, ToTrack.GLYPH, ToTrack.BUYBACK]
+    ) -> list[timedelta]:
         """Get corresponding time splits for a constant."""
         match self:
             case ToTrack.ROSHAN:
@@ -71,8 +95,31 @@ class ToTrack(str, Enum):
                 return [timedelta(minutes=5)]
             case ToTrack.BUYBACK:
                 return [timedelta(minutes=8)]
-            case _:
-                raise NotImplementedError
+
+    def translated(
+        self: Literal[ToTrack.ROSHAN, ToTrack.GLYPH, ToTrack.BUYBACK],
+        language: Language,
+    ) -> str:
+        """Get a corresponding translation."""
+        match self:
+            case ToTrack.ROSHAN:
+                return "рошан" if language is Language.RUSSIAN else "roshan"
+            case ToTrack.GLYPH:
+                match language:
+                    case Language.ENGLISH:
+                        return "glyph"
+                    case Language.SPANISH:
+                        return "glifo"
+                    case Language.RUSSIAN:
+                        return "глиф"
+            case ToTrack.BUYBACK:
+                match language:
+                    case Language.ENGLISH:
+                        return "buyback"
+                    case Language.SPANISH:
+                        return "resurrección"
+                    case Language.RUSSIAN:
+                        return "выкуп"
 
 
 class TimersSep(str, Enum):
@@ -80,30 +127,6 @@ class TimersSep(str, Enum):
 
     ARROW = " -> "
     PIPE = " || "
-
-
-class Language(str, Enum):
-    """Languages for Roshan death timer output."""
-
-    ENGLISH = "english"
-    RUSSIAN = "russian"
-    SPANISH = "spanish"
-
-    @property
-    def rosh_death_timer(self) -> tuple[str, ...]:
-        """Get corresponding translation for Roshan death timer output."""
-        match self:
-            case Language.ENGLISH | Language.SPANISH:
-                return (
-                    "kill" if self is Language.ENGLISH else "matar",
-                    "exp",
-                    "min",
-                    "max",
-                )
-            case Language.RUSSIAN:
-                return "уб", "конец", "мин", "макс"
-            case _:
-                raise NotImplementedError
 
 
 def enter_subdir(subdir: str) -> Callable[[Callable[P, T]], Callable[P, T]]:
@@ -114,9 +137,9 @@ def enter_subdir(subdir: str) -> Callable[[Callable[P, T]], Callable[P, T]]:
         def wrapper(*args, **kwargs) -> T:
             os.makedirs(subdir, exist_ok=True)
             os.chdir(subdir)
-            result = function(*args, **kwargs)
+            return_value = function(*args, **kwargs)
             os.chdir("..")
-            return result
+            return return_value
 
         return wrapper
 
@@ -148,14 +171,16 @@ def process_timedeltas(
 def get_cooldowns(
     constant_type: str, item_or_ability: str | None
 ) -> str | Iterable[str]:
-    """A shorthand for querying cooldowns from the OpenDota constants database. To reduce the load
-    on GitHub servers and waste less traffic, queries are cached and are updated every other day.
-    Caching is done with simdjson, an extremely fast JSON parser."""
+    """A shorthand for querying cooldowns from the OpenDota constants database. To
+    reduce the load on GitHub servers and waste less traffic, queries are cached and
+    are updated every other day. Caching is done with simdjson, an extremely fast JSON
+    parser."""
     try:
         assert item_or_ability is not None
     except AssertionError as error:
         raise AssertionError(
-            f"Missing item or ability command line parameter for constant type {constant_type}."
+            f"Missing item or ability command line parameter for constant type "
+            f"{constant_type}."
         ) from error
     data, parser = {}, simdjson.Parser()
     try:
@@ -229,7 +254,8 @@ def main(
     item_or_ability: Optional[str] = typer.Argument(
         None,
         help="Specify the cooldown of what item or ability you want to track. "
-        "For abilities, make sure to prefix the hero name (e.g. `faceless_void_chronosphere`).",
+        "For abilities, make sure to prefix the hero name "
+        "(e.g. `faceless_void_chronosphere`).",
     ),
     language: Language = typer.Option(
         Language.ENGLISH,
@@ -237,14 +263,16 @@ def main(
         "is specified, English is chosen.",
     ),
 ) -> None:
-    """The main function. One can pass a command-line argument to track other metrics here."""
+    """The main function. One can pass a command-line argument to track other
+    metrics here."""
     typer.echo("Running...")
     timers_sep, sep_prefix = TimersSep.ARROW, None
     match to_track:
         case ToTrack.ROSHAN | ToTrack.GLYPH | ToTrack.BUYBACK:
-            times = to_track.times
             if to_track is ToTrack.ROSHAN:
-                sep_prefix = language.rosh_death_timer
+                sep_prefix = language.sep_prefix_roshan
+            times = to_track.times
+            to_track = to_track.translated(language)
         case ToTrack.ITEM | ToTrack.ABILITY:
             cooldown = get_cooldowns(to_track.plural, item_or_ability)
             to_track = item_or_ability.replace("_", " ")
