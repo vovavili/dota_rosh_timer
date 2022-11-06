@@ -114,9 +114,9 @@ def enter_subdir(subdir: str) -> Callable[[Callable[P, T]], Callable[P, T]]:
         def wrapper(*args, **kwargs) -> T:
             os.makedirs(subdir, exist_ok=True)
             os.chdir(subdir)
-            result = function(*args, **kwargs)
+            return_value = function(*args, **kwargs)
             os.chdir("..")
-            return result
+            return return_value
 
         return wrapper
 
