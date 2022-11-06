@@ -12,6 +12,8 @@ By default, this tracks the Roshan timer. One can also specify command line argu
 track metrics like glyph, buyback, item and ability cooldowns.
 """
 
+from __future__ import annotations
+
 import itertools
 import os
 import string
