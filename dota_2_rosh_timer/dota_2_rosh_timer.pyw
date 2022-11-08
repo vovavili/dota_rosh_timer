@@ -45,9 +45,9 @@ P = ParamSpec("P")
 class Language(str, Enum):
     """Languages for timer output."""
 
-    ENGLISH = "en"
-    RUSSIAN = "ru"
-    SPANISH = "es"
+    ENGLISH = "english"
+    RUSSIAN = "russian"
+    SPANISH = "spanish"
 
 
 class ToTrack(str, Enum):
