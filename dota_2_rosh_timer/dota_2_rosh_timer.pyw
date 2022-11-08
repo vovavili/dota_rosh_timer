@@ -42,9 +42,9 @@ T = TypeVar("T")
 P = ParamSpec("P")
 
 
-def setup_gettext() -> None:
-    """gettext has to be installed in global built-ins before Enum definition. Doing
-    this inside Typer would cause conflict with type annotations."""
+def setup_gettext_underscore() -> None:
+    """gettext underscore has to be installed in global built-ins before Enum
+    definition. Doing this inside Typer would cause conflict with type annotations."""
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--language", required=False, default="en")
     language = argparser.parse_args().language[:2]
@@ -58,7 +58,7 @@ def setup_gettext() -> None:
     ).install()
 
 
-setup_gettext()
+setup_gettext_underscore()
 
 
 class Language(str, Enum):
