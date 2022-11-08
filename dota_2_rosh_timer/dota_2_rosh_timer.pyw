@@ -23,6 +23,7 @@ from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta
 from enum import Enum
 from functools import wraps
+from gettext import gettext as _
 from pathlib import Path
 from typing import Literal, Optional, ParamSpec, TypeVar
 from urllib.error import HTTPError
@@ -56,12 +57,10 @@ def setup_gettext_underscore() -> None:
         languages=[language],
         fallback=True,
     ).install()
+    del _
 
 
 setup_gettext_underscore()
-
-# Keep PyCharm happy
-_ = _  # NOQA
 
 
 class Language(str, Enum):
