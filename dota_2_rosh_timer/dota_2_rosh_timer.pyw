@@ -24,7 +24,7 @@ from enum import Enum
 from functools import wraps
 from gettext import gettext as _
 from pathlib import Path
-from typing import Literal, Optional, ParamSpec, TypeVar
+from typing import Final, Literal, Optional, ParamSpec, TypeVar
 from urllib.error import HTTPError
 from urllib.request import urlopen
 
@@ -40,6 +40,8 @@ from PIL import ImageGrab
 
 T = TypeVar("T")
 P = ParamSpec("P")
+
+HOME_DIR: Final[Path] = Path(__file__).resolve().parents[1]
 
 
 class Language(str, Enum):
@@ -95,10 +97,11 @@ def enter_subdir(subdir: str) -> Callable[[Callable[P, T]], Callable[P, T]]:
     def decorator(function: Callable[P, T]) -> Callable[P, T]:
         @wraps(function)
         def wrapper(*args, **kwargs) -> T:
-            os.makedirs(subdir, exist_ok=True)
+            old_dir = Path.cwd()
+            os.makedirs(HOME_DIR / subdir, exist_ok=True)
             os.chdir(subdir)
             return_value = function(*args, **kwargs)
-            os.chdir("..")
+            os.chdir(old_dir)
             return return_value
 
         return wrapper
@@ -233,7 +236,7 @@ def main(
         language = "es"
     gettext.translation(
         "translate",
-        localedir=Path(__file__).resolve().parents[1] / "locale",
+        localedir=HOME_DIR / "locale",
         languages=[language],
         fallback=True,
     ).install()
