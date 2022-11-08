@@ -14,6 +14,8 @@ track metrics like glyph, buyback, item and ability cooldowns.
 
 from __future__ import annotations
 
+import argparse
+import gettext
 import itertools
 import os
 import string
@@ -21,6 +23,7 @@ from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta
 from enum import Enum
 from functools import wraps
+from pathlib import Path
 from typing import Literal, Optional, ParamSpec, TypeVar
 from urllib.error import HTTPError
 from urllib.request import urlopen
@@ -38,46 +41,42 @@ from PIL import ImageGrab
 T = TypeVar("T")
 P = ParamSpec("P")
 
+# gettext has to be installed in global built-ins before Enum definition.
+argparser = argparse.ArgumentParser()
+argparser.add_argument("--language", required=False, default="en")
+language = argparser.parse_args().language[:2]
+if language == "sp":
+    language = "es"
+gettext.translation(
+    "translate",
+    localedir=Path(__file__).resolve().parents[1] / "locale",
+    languages=[language],
+    fallback=True,
+).install()
+
 
 class Language(str, Enum):
     """Languages for timer output."""
 
-    ENGLISH = "english"
-    RUSSIAN = "russian"
-    SPANISH = "spanish"
-
-    @property
-    def sep_prefix_roshan(self) -> tuple[str, ...]:
-        """Get corresponding translation for Roshan death time separators."""
-        match self:
-            case Language.ENGLISH | Language.SPANISH:
-                return (
-                    "kill" if self is Language.ENGLISH else "matar",
-                    "exp",
-                    "min",
-                    "max",
-                )
-            case Language.RUSSIAN:
-                return "уб", "конец", "мин", "макс"
+    ENGLISH = "en"
+    RUSSIAN = "ru"
+    SPANISH = "es"
 
 
+# noinspection PyUnresolvedReferences
 class ToTrack(str, Enum):
     """All the valid main function arguments."""
 
-    ROSHAN = "roshan"
-    GLYPH = "glyph"
-    BUYBACK = "buyback"
+    ROSHAN = _("roshan")
+    GLYPH = _("glyph")
+    BUYBACK = _("buyback")
     ITEM = "item"
     ABILITY = "ability"
 
     @property
     def plural(self: Literal[ToTrack.ITEM, ToTrack.ABILITY]) -> str:
         """Get a pluralized form of the string."""
-        match self:
-            case ToTrack.ITEM:
-                return "items"
-            case ToTrack.ABILITY:
-                return "abilities"
+        return "items" if self is ToTrack.ITEM else "abilities"
 
     @property
     def times(
@@ -95,31 +94,6 @@ class ToTrack(str, Enum):
                 return [timedelta(minutes=5)]
             case ToTrack.BUYBACK:
                 return [timedelta(minutes=8)]
-
-    def translated(
-        self: Literal[ToTrack.ROSHAN, ToTrack.GLYPH, ToTrack.BUYBACK],
-        language: Language,
-    ) -> str:
-        """Get a corresponding translation."""
-        match self:
-            case ToTrack.ROSHAN:
-                return "рошан" if language is Language.RUSSIAN else "roshan"
-            case ToTrack.GLYPH:
-                match language:
-                    case Language.ENGLISH:
-                        return "glyph"
-                    case Language.SPANISH:
-                        return "glifo"
-                    case Language.RUSSIAN:
-                        return "глиф"
-            case ToTrack.BUYBACK:
-                match language:
-                    case Language.ENGLISH:
-                        return "buyback"
-                    case Language.SPANISH:
-                        return "resurrección"
-                    case Language.RUSSIAN:
-                        return "выкуп"
 
 
 class TimersSep(str, Enum):
@@ -245,6 +219,7 @@ def screenshot_dota_timer() -> npt.NDArray[np.uint8]:
     return cv.resize(img, None, fx=3, fy=3, interpolation=cv.INTER_CUBIC)
 
 
+# noinspection PyUnresolvedReferences
 def main(
     to_track: ToTrack = typer.Argument(
         ToTrack.ROSHAN,
@@ -257,7 +232,7 @@ def main(
         "For abilities, make sure to prefix the hero name "
         "(e.g. `faceless_void_chronosphere`).",
     ),
-    language: Language = typer.Option(
+    language: Language = typer.Option(  # NOQA
         Language.ENGLISH,
         help="Specify the output language for Roshan death timer. If no argument "
         "is specified, English is chosen.",
@@ -265,24 +240,22 @@ def main(
 ) -> None:
     """The main function. One can pass a command-line argument to track other
     metrics here."""
+
     typer.echo("Running...")
+
     timers_sep, sep_prefix = TimersSep.ARROW, None
-    match to_track:
-        case ToTrack.ROSHAN | ToTrack.GLYPH | ToTrack.BUYBACK:
-            if to_track is ToTrack.ROSHAN:
-                sep_prefix = language.sep_prefix_roshan
-            times = to_track.times
-            to_track = to_track.translated(language)
-        case ToTrack.ITEM | ToTrack.ABILITY:
-            cooldown = get_cooldowns(to_track.plural, item_or_ability)
-            to_track = item_or_ability.replace("_", " ")
-            if isinstance(cooldown, str | int):
-                times = [timedelta(seconds=int(cooldown))]
-            else:
-                timers_sep = TimersSep.PIPE
-                times = [timedelta(seconds=int(delta)) for delta in cooldown]
-        case _:
-            raise NotImplementedError
+    if to_track in {ToTrack.ROSHAN, ToTrack.GLYPH, ToTrack.BUYBACK}:
+        times = to_track.times
+        if to_track is ToTrack.ROSHAN:
+            sep_prefix = (_("kill"), _("exp"), _("min"), _("max"))
+    else:
+        cooldown = get_cooldowns(to_track.plural, item_or_ability)
+        to_track = item_or_ability.replace("_", " ")
+        if isinstance(cooldown, str | int):
+            times = [timedelta(seconds=int(cooldown))]
+        else:
+            timers_sep = TimersSep.PIPE
+            times = [timedelta(seconds=int(delta)) for delta in cooldown]
 
     img = screenshot_dota_timer()
     retries = itertools.count(1)
