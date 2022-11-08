@@ -41,18 +41,24 @@ from PIL import ImageGrab
 T = TypeVar("T")
 P = ParamSpec("P")
 
-# gettext has to be installed in global built-ins before Enum definition.
-argparser = argparse.ArgumentParser()
-argparser.add_argument("--language", required=False, default="en")
-language = argparser.parse_args().language[:2]
-if language == "sp":
-    language = "es"
-gettext.translation(
-    "translate",
-    localedir=Path(__file__).resolve().parents[1] / "locale",
-    languages=[language],
-    fallback=True,
-).install()
+
+def setup_gettext() -> None:
+    """gettext has to be installed in global built-ins before Enum definition. Doing
+    this inside Typer would cause conflict with type annotations."""
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument("--language", required=False, default="en")
+    language = argparser.parse_args().language[:2]
+    if language == "sp":
+        language = "es"
+    gettext.translation(
+        "translate",
+        localedir=Path(__file__).resolve().parents[1] / "locale",
+        languages=[language],
+        fallback=True,
+    ).install()
+
+
+setup_gettext()
 
 
 class Language(str, Enum):
