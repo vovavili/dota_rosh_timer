@@ -57,10 +57,10 @@ def setup_gettext_underscore() -> None:
         languages=[language],
         fallback=True,
     ).install()
-    del _
 
 
 setup_gettext_underscore()
+del _
 
 
 class Language(str, Enum):
