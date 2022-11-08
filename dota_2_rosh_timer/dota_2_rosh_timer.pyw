@@ -99,7 +99,7 @@ def enter_subdir(subdir: str) -> Callable[[Callable[P, T]], Callable[P, T]]:
         def wrapper(*args, **kwargs) -> T:
             old_dir = Path.cwd()
             os.makedirs(HOME_DIR / subdir, exist_ok=True)
-            os.chdir(subdir)
+            os.chdir(HOME_DIR / subdir)
             return_value = function(*args, **kwargs)
             os.chdir(old_dir)
             return return_value
