@@ -60,6 +60,9 @@ def setup_gettext_underscore() -> None:
 
 setup_gettext_underscore()
 
+# Keep PyCharm happy
+_ = _  # NOQA
+
 
 class Language(str, Enum):
     """Languages for timer output."""
@@ -69,7 +72,6 @@ class Language(str, Enum):
     SPANISH = "es"
 
 
-# noinspection PyUnresolvedReferences
 class ToTrack(str, Enum):
     """All the valid main function arguments."""
 
@@ -225,7 +227,6 @@ def screenshot_dota_timer() -> npt.NDArray[np.uint8]:
     return cv.resize(img, None, fx=3, fy=3, interpolation=cv.INTER_CUBIC)
 
 
-# noinspection PyUnresolvedReferences
 def main(
     to_track: ToTrack = typer.Argument(
         ToTrack.ROSHAN,
