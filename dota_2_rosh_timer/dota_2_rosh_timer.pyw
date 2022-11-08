@@ -14,7 +14,6 @@ track metrics like glyph, buyback, item and ability cooldowns.
 
 from __future__ import annotations
 
-import argparse
 import gettext
 import itertools
 import os
@@ -43,26 +42,6 @@ T = TypeVar("T")
 P = ParamSpec("P")
 
 
-def setup_gettext_underscore() -> None:
-    """gettext underscore has to be installed in global built-ins before Enum
-    definition. Doing this inside Typer would cause conflict with type annotations."""
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument("--language", required=False, default="en")
-    language = argparser.parse_args().language[:2]
-    if language == "sp":
-        language = "es"
-    gettext.translation(
-        "translate",
-        localedir=Path(__file__).resolve().parents[1] / "locale",
-        languages=[language],
-        fallback=True,
-    ).install()
-
-
-setup_gettext_underscore()
-del _
-
-
 class Language(str, Enum):
     """Languages for timer output."""
 
@@ -74,9 +53,9 @@ class Language(str, Enum):
 class ToTrack(str, Enum):
     """All the valid main function arguments."""
 
-    ROSHAN = _("roshan")
-    GLYPH = _("glyph")
-    BUYBACK = _("buyback")
+    ROSHAN = "roshan"
+    GLYPH = "glyph"
+    BUYBACK = "buyback"
     ITEM = "item"
     ABILITY = "ability"
 
@@ -238,7 +217,7 @@ def main(
         "For abilities, make sure to prefix the hero name "
         "(e.g. `faceless_void_chronosphere`).",
     ),
-    language: Language = typer.Option(  # NOQA
+    language: Language = typer.Option(
         Language.ENGLISH,
         help="Specify the output language for Roshan death timer. If no argument "
         "is specified, English is chosen.",
@@ -249,11 +228,23 @@ def main(
 
     typer.echo("Running...")
 
+    language = language[:2]
+    if language == "sp":
+        language = "es"
+    gettext.translation(
+        "translate",
+        localedir=Path(__file__).resolve().parents[1] / "locale",
+        languages=[language],
+        fallback=True,
+    ).install()
+    del globals()["_"]
+
     timers_sep, sep_prefix = TimersSep.ARROW, None
     if to_track in {ToTrack.ROSHAN, ToTrack.GLYPH, ToTrack.BUYBACK}:
         times = to_track.times
         if to_track is ToTrack.ROSHAN:
             sep_prefix = (_("kill"), _("exp"), _("min"), _("max"))
+        to_track = _(to_track)
     else:
         cooldown = get_cooldowns(to_track.plural, item_or_ability)
         to_track = item_or_ability.replace("_", " ")
