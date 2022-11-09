@@ -231,13 +231,11 @@ def main(
 
     typer.echo("Running...")
 
-    language = language[:2]
-    if language == "sp":
-        language = "es"
+    language = [language[:2] if language is not Language.SPANISH else "es"]
     gettext.translation(
         "translate",
         localedir=HOME_DIR / "locale",
-        languages=[language],
+        languages=language,
         fallback=True,
     ).install()
     del globals()["_"]
