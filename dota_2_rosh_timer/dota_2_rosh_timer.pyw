@@ -97,9 +97,9 @@ def enter_subdir(subdir: str) -> Callable[[Callable[P, T]], Callable[P, T]]:
     def decorator(function: Callable[P, T]) -> Callable[P, T]:
         @wraps(function)
         def wrapper(*args, **kwargs) -> T:
-            old_dir = Path.cwd()
-            os.makedirs(HOME_DIR / subdir, exist_ok=True)
-            os.chdir(HOME_DIR / subdir)
+            old_dir, new_dir = Path.cwd(), HOME_DIR / subdir
+            new_dir.mkdir(parents=True, exist_ok=True)
+            os.chdir(new_dir)
             return_value = function(*args, **kwargs)
             os.chdir(old_dir)
             return return_value
