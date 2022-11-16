@@ -21,7 +21,7 @@ import string
 from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta
 from enum import Enum
-from functools import wraps
+from functools import wraps, partial
 from gettext import gettext as _
 from pathlib import Path
 from typing import Final, Literal, Optional, ParamSpec, TypeVar
@@ -37,6 +37,7 @@ import screeninfo
 import simdjson
 import typer
 from PIL import ImageGrab
+from simdjson import Parser
 
 T = TypeVar("T")
 P = ParamSpec("P")
@@ -130,6 +131,14 @@ def process_timedeltas(
     return prefix + " " + timers_sep.join(times)
 
 
+def make_update_timestamp(filename: str, days: int) -> None:
+    """Set the time threshold at which the cache timestamp has to be checked."""
+    with open(filename, "w", encoding="utf-8") as file:
+        timestamp = datetime.now() + timedelta(days=days)
+        timestamp = simdjson.dumps(timestamp.isoformat())
+        file.write(timestamp)
+
+
 @enter_subdir("cache")
 def get_cooldowns(
     constant_type: str, item_or_ability: str | None
@@ -145,32 +154,41 @@ def get_cooldowns(
             f"Missing item or ability command line parameter for constant type "
             f"{constant_type}."
         ) from error
-    data, parser = {}, simdjson.Parser()
+    data, timestamp_filename, cache_filename = (
+        {},
+        constant_type + "_timestamp.json",
+        constant_type + "_cache.json",
+    )
+    update_timestamp = partial(make_update_timestamp, timestamp_filename, 2)
     try:
         # Check whether the locally stored cache needs an update
-        timestamp = parser.load(constant_type + "_timestamp.json")
-        assert datetime.now() < datetime.fromisoformat(timestamp)
-
+        timestamp = Parser().load(timestamp_filename)
+        # Only prune cache if new patch has been released
+        if datetime.now() > datetime.fromisoformat(timestamp["timestamp"]):
+            with urlopen(
+                "https://raw.githubusercontent.com/odota/dotaconstants/master/"
+                "build/patchnotes.json"
+            ) as patchnotes_link:
+                *_, patch = Parser().parse(patchnotes_link.read()).keys()
+            assert patch == timestamp["patch"]
+        update_timestamp()
         # Load the locally stored cache, if it exists
-        data = parser.load(constant_type + "_cache.json")
-    except (FileNotFoundError, OSError, AssertionError):
+        data = Parser().load(cache_filename)
+    except (FileNotFoundError, OSError, AssertionError, KeyError):
         with urlopen(
             "https://raw.githubusercontent.com/odota/dotaconstants/master/build/"
             + constant_type
             + ".json"
         ) as opendota_link:
             try:
-                data = parser.parse(opendota_link.read())
+                data = Parser().parse(opendota_link.read())
             except HTTPError as error:
                 raise ValueError(
                     f'Constant type "{constant_type}" does not exist in '
                     f"the OpenDotA constants database."
                 ) from error
-        with open(constant_type + "_timestamp.json", "w", encoding="utf-8") as file:
-            timestamp = datetime.now() + timedelta(days=2)
-            timestamp = simdjson.dumps(timestamp.isoformat())
-            file.write(timestamp)
-        with open(constant_type + "_cache.json", "wb") as file:
+        update_timestamp()
+        with open(cache_filename, "wb") as file:
             file.write(data.mini)  # NOQA
     try:
         return data[item_or_ability]["cd"]
