@@ -21,7 +21,7 @@ import string
 from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta
 from enum import Enum
-from functools import wraps
+from functools import partial, wraps
 from gettext import gettext as _
 from pathlib import Path
 from typing import Final, Literal, Optional, ParamSpec, TypeVar
@@ -37,11 +37,15 @@ import screeninfo
 import simdjson
 import typer
 from PIL import ImageGrab
+from simdjson import Parser
 
 T = TypeVar("T")
 P = ParamSpec("P")
 
 HOME_DIR: Final[Path] = Path(__file__).resolve().parents[1]
+CONSTANTS_URL: Final[
+    str
+] = "https://raw.githubusercontent.com/odota/dotaconstants/master/build/"
 
 
 class Language(str, Enum):
@@ -130,47 +134,65 @@ def process_timedeltas(
     return prefix + " " + timers_sep.join(times)
 
 
+def make_update_timestamp(filename: str, patch: str, days: int = 2) -> None:
+    """Set the time threshold at which the cache timestamp has to be checked."""
+    timestamp = datetime.now() + timedelta(days=days)
+    timestamp = simdjson.dumps({"timestamp": timestamp.isoformat(), "patch": patch})
+    with open(filename, "w", encoding="utf-8") as file:
+        file.write(timestamp)
+
+
+def get_latest_patch() -> str:
+    """Get the latest available DotA 2 patch."""
+    with urlopen(CONSTANTS_URL + "patchnotes.json") as patchnotes_link:
+        *_, patch = Parser().parse(patchnotes_link.read()).keys()
+    return patch
+
+
 @enter_subdir("cache")
 def get_cooldowns(
-    constant_type: str, item_or_ability: str | None
+    constant_type: str, item_or_ability: str | None, force_update: bool
 ) -> str | Iterable[str]:
     """A shorthand for querying cooldowns from the OpenDota constants database. To
     reduce the load on GitHub servers and waste less traffic, queries are cached and
-    are updated every other day. Caching is done with simdjson, an extremely fast JSON
-    parser."""
-    try:
-        assert item_or_ability is not None
-    except AssertionError as error:
-        raise AssertionError(
+    are updated when there is a new patch only. Caching is done with simdjson, an
+    extremely fast JSON parser."""
+    if item_or_ability is None:
+        raise ValueError(
             f"Missing item or ability command line parameter for constant type "
             f"{constant_type}."
-        ) from error
-    data, parser = {}, simdjson.Parser()
+        )
+    data, patch, timestamp_filename, cache_filename = (
+        {},
+        None,
+        constant_type + "_timestamp.json",
+        constant_type + "_cache.json",
+    )
+    update_timestamp = partial(make_update_timestamp, timestamp_filename)
     try:
+        assert not force_update
         # Check whether the locally stored cache needs an update
-        timestamp = parser.load(constant_type + "_timestamp.json")
-        assert datetime.now() < datetime.fromisoformat(timestamp)
-
+        timestamp = Parser().load(timestamp_filename)
+        # Only prune cache if new patch has been released
+        if datetime.now() > datetime.fromisoformat(timestamp["timestamp"]):
+            patch = get_latest_patch()
+            assert patch == timestamp["patch"]
+            update_timestamp(patch)
         # Load the locally stored cache, if it exists
-        data = parser.load(constant_type + "_cache.json")
-    except (FileNotFoundError, OSError, AssertionError):
-        with urlopen(
-            "https://raw.githubusercontent.com/odota/dotaconstants/master/build/"
-            + constant_type
-            + ".json"
-        ) as opendota_link:
+        data = Parser().load(cache_filename)
+    except (FileNotFoundError, OSError, AssertionError, KeyError):
+        with urlopen(CONSTANTS_URL + constant_type + ".json") as opendota_link:
             try:
-                data = parser.parse(opendota_link.read())
+                data = Parser().parse(opendota_link.read())
             except HTTPError as error:
                 raise ValueError(
                     f'Constant type "{constant_type}" does not exist in '
                     f"the OpenDotA constants database."
                 ) from error
-        with open(constant_type + "_timestamp.json", "w", encoding="utf-8") as file:
-            timestamp = datetime.now() + timedelta(days=2)
-            timestamp = simdjson.dumps(timestamp.isoformat())
-            file.write(timestamp)
-        with open(constant_type + "_cache.json", "wb") as file:
+        if patch is None:
+            patch = get_latest_patch()
+        update_timestamp(patch)
+        with open(cache_filename, "wb") as file:
             file.write(data.mini)  # NOQA
     try:
         return data[item_or_ability]["cd"]
@@ -197,15 +219,15 @@ def screenshot_dota_timer() -> npt.NDArray[np.uint8]:
         half_width + offset,
         height // 30,
     )
-    img = np.asarray(ImageGrab.grab(bbox=bbox))  # NOQA
+    image = np.asarray(ImageGrab.grab(bbox=bbox))  # NOQA
     # Image pre-processing in OpenCV
     # Blend in daytime indicator color into the dark background
     yellow_min = np.array([140, 115, 75], np.uint8)
     yellow_max = np.array([160, 135, 95], np.uint8)
-    mask = cv.inRange(img, yellow_min, yellow_max)
-    img[mask > 0] = (67, 71, 67)
-    img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-    return cv.resize(img, None, fx=3, fy=3, interpolation=cv.INTER_CUBIC)
+    mask = cv.inRange(image, yellow_min, yellow_max)
+    image[mask > 0] = (67, 71, 67)
+    image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+    return cv.resize(image, None, fx=3, fy=3, interpolation=cv.INTER_CUBIC)
 
 
 def main(
@@ -225,6 +247,9 @@ def main(
         help="Specify the output language for Roshan death timer. If no argument "
         "is specified, English is chosen.",
     ),
+    force_update: bool = typer.Option(
+        False, "--force_update", help="Force locally stored cache update."
+    ),
 ) -> None:
     """The main function. One can pass a command-line argument to track other
     metrics here."""
@@ -238,7 +263,7 @@ def main(
         languages=language,
         fallback=True,
     ).install()
-    del globals()["_"]
+    del globals()["_"]  # Keep PyCharm happy
 
     timers_sep, sep_prefix = TimersSep.ARROW, None
     if to_track in {ToTrack.ROSHAN, ToTrack.GLYPH, ToTrack.BUYBACK}:
@@ -247,7 +272,7 @@ def main(
             sep_prefix = (_("kill"), _("exp"), _("min"), _("max"))
         to_track = _(to_track)
     else:
-        cooldown = get_cooldowns(to_track.plural, item_or_ability)
+        cooldown = get_cooldowns(to_track.plural, item_or_ability, force_update)
         to_track = item_or_ability.replace("_", " ")
         if isinstance(cooldown, str | int):
             times = [timedelta(seconds=int(cooldown))]
@@ -255,12 +280,21 @@ def main(
             timers_sep = TimersSep.PIPE
             times = [timedelta(seconds=int(delta)) for delta in cooldown]
 
-    img = screenshot_dota_timer()
-    retries = itertools.count(1)
-    reader = easyocr.Reader(["en"])
-    while not (timer := reader.readtext(img, detail=0, allowlist=string.digits + ":")):
-        if next(retries) > 10:
-            raise ValueError("Too many retries, OCR can't recognize characters.")
+    reader, screenshot_retries = easyocr.Reader(["en"]), itertools.count(1)
+
+    # Screenshot at most 5 times, and try to OCR screenshot at most 10 times.
+    while next(screenshot_retries) < 5:
+        image = screenshot_dota_timer()
+        ocr_retries = itertools.count(1)
+        while not (
+            timer := reader.readtext(image, detail=0, allowlist=string.digits + ":")
+        ):
+            if next(ocr_retries) > 10:
+                break
+        else:
+            break
+    else:
+        raise ValueError("Too many retries, OCR can't recognize characters.")
     timer = timer[0]
     if ":" not in timer:
         timer = f"{timer[:-2]}:{timer[-2:]}"
