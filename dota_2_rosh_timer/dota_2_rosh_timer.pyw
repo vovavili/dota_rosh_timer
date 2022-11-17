@@ -267,7 +267,7 @@ def main(
         languages=language,
         fallback=True,
     ).install()
-    del globals()["_"]
+    del globals()["_"]  # Keep PyCharm happy
 
     timers_sep, sep_prefix = TimersSep.ARROW, None
     if to_track in {ToTrack.ROSHAN, ToTrack.GLYPH, ToTrack.BUYBACK}:
