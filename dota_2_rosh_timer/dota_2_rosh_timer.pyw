@@ -131,12 +131,22 @@ def process_timedeltas(
     return prefix + " " + timers_sep.join(times)
 
 
-def make_update_timestamp(filename: str, days: int) -> None:
+def make_update_timestamp(filename: str, days: int, patch: str) -> None:
     """Set the time threshold at which the cache timestamp has to be checked."""
+    timestamp = datetime.now() + timedelta(days=days)
+    timestamp = simdjson.dumps({"timestamp": timestamp.isoformat(), "patch": patch})
     with open(filename, "w", encoding="utf-8") as file:
-        timestamp = datetime.now() + timedelta(days=days)
-        timestamp = simdjson.dumps(timestamp.isoformat())
         file.write(timestamp)
+
+
+def get_latest_patch() -> str:
+    """Get the latest availible DotA 2 patch."""
+    with urlopen(
+        "https://raw.githubusercontent.com/odota/dotaconstants/master/"
+        "build/patchnotes.json"
+    ) as patchnotes_link:
+        *_, patch = Parser().parse(patchnotes_link.read()).keys()
+    return patch
 
 
 @enter_subdir("cache")
@@ -154,8 +164,9 @@ def get_cooldowns(
             f"Missing item or ability command line parameter for constant type "
             f"{constant_type}."
         ) from error
-    data, timestamp_filename, cache_filename = (
+    data, patch, timestamp_filename, cache_filename = (
         {},
+        None,
         constant_type + "_timestamp.json",
         constant_type + "_cache.json",
     )
@@ -165,13 +176,9 @@ def get_cooldowns(
         timestamp = Parser().load(timestamp_filename)
         # Only prune cache if new patch has been released
         if datetime.now() > datetime.fromisoformat(timestamp["timestamp"]):
-            with urlopen(
-                "https://raw.githubusercontent.com/odota/dotaconstants/master/"
-                "build/patchnotes.json"
-            ) as patchnotes_link:
-                *_, patch = Parser().parse(patchnotes_link.read()).keys()
+            patch = get_latest_patch()
             assert patch == timestamp["patch"]
-        update_timestamp()
+        update_timestamp(timestamp["patch"])
         # Load the locally stored cache, if it exists
         data = Parser().load(cache_filename)
     except (FileNotFoundError, OSError, AssertionError, KeyError):
@@ -187,7 +194,9 @@ def get_cooldowns(
                     f'Constant type "{constant_type}" does not exist in '
                     f"the OpenDotA constants database."
                 ) from error
-        update_timestamp()
+        if patch is None:
+            patch = get_latest_patch()
+        update_timestamp(patch)
         with open(cache_filename, "wb") as file:
             file.write(data.mini)  # NOQA
     try:
