@@ -24,6 +24,8 @@ And, with the help `OpenDotA's DotA 2 constants API <https://github.com/odota/do
 
 If needed, the script can also output time splits in Russian or Spanish (e.g. ``dota_2_rosh_timer.pyw glyph --language russian``).
 
+In case you want to force update abilities or items cooldown cache, you also can use the ``--force_update`` flag.
+
 Installation guide
 --------
 
