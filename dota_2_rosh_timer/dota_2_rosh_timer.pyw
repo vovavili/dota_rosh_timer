@@ -131,7 +131,7 @@ def process_timedeltas(
     return prefix + " " + timers_sep.join(times)
 
 
-def make_update_timestamp(filename: str, days: int, patch: str) -> None:
+def make_update_timestamp(filename: str, patch: str, days: int = 2) -> None:
     """Set the time threshold at which the cache timestamp has to be checked."""
     timestamp = datetime.now() + timedelta(days=days)
     timestamp = simdjson.dumps({"timestamp": timestamp.isoformat(), "patch": patch})
@@ -168,7 +168,7 @@ def get_cooldowns(
         constant_type + "_timestamp.json",
         constant_type + "_cache.json",
     )
-    update_timestamp = partial(make_update_timestamp, timestamp_filename, 2)
+    update_timestamp = partial(make_update_timestamp, timestamp_filename)
     try:
         assert not force_update
         # Check whether the locally stored cache needs an update
