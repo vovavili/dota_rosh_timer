@@ -178,9 +178,9 @@ def get_cooldowns(
         if datetime.now() > datetime.fromisoformat(timestamp["timestamp"]):
             patch = get_latest_patch()
             assert patch == timestamp["patch"]
+            update_timestamp(patch)
         # Load the locally stored cache, if it exists
         data = Parser().load(cache_filename)
-        update_timestamp(timestamp["patch"])
     except (FileNotFoundError, OSError, AssertionError, KeyError):
         with urlopen(
             "https://raw.githubusercontent.com/odota/dotaconstants/master/build/"
