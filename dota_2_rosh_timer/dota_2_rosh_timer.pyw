@@ -157,13 +157,11 @@ def get_cooldowns(
     reduce the load on GitHub servers and waste less traffic, queries are cached and
     are updated when there is a new patch only. Caching is done with simdjson, an
     extremely fast JSON parser."""
-    try:
-        assert item_or_ability is not None
-    except AssertionError as error:
-        raise AssertionError(
+    if item_or_ability is None:
+        raise ValueError(
             f"Missing item or ability command line parameter for constant type "
             f"{constant_type}."
-        ) from error
+        )
     data, patch, timestamp_filename, cache_filename = (
         {},
         None,
