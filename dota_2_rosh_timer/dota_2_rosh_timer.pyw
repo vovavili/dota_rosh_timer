@@ -151,7 +151,7 @@ def get_latest_patch() -> str:
 
 @enter_subdir("cache")
 def get_cooldowns(
-    constant_type: str, item_or_ability: str | None
+    constant_type: str, item_or_ability: str | None, force_update: bool
 ) -> str | Iterable[str]:
     """A shorthand for querying cooldowns from the OpenDota constants database. To
     reduce the load on GitHub servers and waste less traffic, queries are cached and
@@ -172,6 +172,7 @@ def get_cooldowns(
     )
     update_timestamp = partial(make_update_timestamp, timestamp_filename, 2)
     try:
+        assert not force_update
         # Check whether the locally stored cache needs an update
         timestamp = Parser().load(timestamp_filename)
         # Only prune cache if new patch has been released
@@ -252,6 +253,9 @@ def main(
         help="Specify the output language for Roshan death timer. If no argument "
         "is specified, English is chosen.",
     ),
+    force_update: bool = typer.Option(
+        False, "--force_update", help="Force locally stored cache update."
+    ),
 ) -> None:
     """The main function. One can pass a command-line argument to track other
     metrics here."""
@@ -274,7 +278,7 @@ def main(
             sep_prefix = (_("kill"), _("exp"), _("min"), _("max"))
         to_track = _(to_track)
     else:
-        cooldown = get_cooldowns(to_track.plural, item_or_ability)
+        cooldown = get_cooldowns(to_track.plural, item_or_ability, force_update)
         to_track = item_or_ability.replace("_", " ")
         if isinstance(cooldown, str | int):
             times = [timedelta(seconds=int(cooldown))]
