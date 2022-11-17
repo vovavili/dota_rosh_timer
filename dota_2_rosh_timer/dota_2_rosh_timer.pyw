@@ -273,12 +273,14 @@ def main(
         to_track = _(to_track)
     else:
         cooldown = get_cooldowns(to_track.plural, item_or_ability, force_update)
-        to_track = item_or_ability.replace("_", " ")
         if isinstance(cooldown, str | int):
             times = [timedelta(seconds=int(cooldown))]
         else:
             timers_sep = TimersSep.PIPE
             times = [timedelta(seconds=int(delta)) for delta in cooldown]
+            if to_track is to_track.ABILITY and len(times) == 3:
+                sep_prefix = ("lvl 6", "lvl 12", "lvl 18")
+        to_track = item_or_ability.replace("_", " ")
 
     reader, screenshot_retries = easyocr.Reader(["en"]), itertools.count(1)
 
