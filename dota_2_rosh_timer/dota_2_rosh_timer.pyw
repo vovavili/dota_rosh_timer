@@ -43,6 +43,9 @@ T = TypeVar("T")
 P = ParamSpec("P")
 
 HOME_DIR: Final[Path] = Path(__file__).resolve().parents[1]
+CONSTANTS_URL: Final[
+    str
+] = "https://raw.githubusercontent.com/odota/dotaconstants/master/build/"
 
 
 class Language(str, Enum):
@@ -141,10 +144,7 @@ def make_update_timestamp(filename: str, patch: str, days: int = 2) -> None:
 
 def get_latest_patch() -> str:
     """Get the latest available DotA 2 patch."""
-    with urlopen(
-        "https://raw.githubusercontent.com/odota/dotaconstants/master/"
-        "build/patchnotes.json"
-    ) as patchnotes_link:
+    with urlopen(CONSTANTS_URL + "patchnotes.json") as patchnotes_link:
         *_, patch = Parser().parse(patchnotes_link.read()).keys()
     return patch
 
@@ -181,11 +181,7 @@ def get_cooldowns(
         # Load the locally stored cache, if it exists
         data = Parser().load(cache_filename)
     except (FileNotFoundError, OSError, AssertionError, KeyError):
-        with urlopen(
-            "https://raw.githubusercontent.com/odota/dotaconstants/master/build/"
-            + constant_type
-            + ".json"
-        ) as opendota_link:
+        with urlopen(CONSTANTS_URL + constant_type + ".json") as opendota_link:
             try:
                 data = Parser().parse(opendota_link.read())
             except HTTPError as error:
