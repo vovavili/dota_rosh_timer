@@ -284,12 +284,21 @@ def main(
             timers_sep = TimersSep.PIPE
             times = [timedelta(seconds=int(delta)) for delta in cooldown]
 
-    img = screenshot_dota_timer()
-    retries = itertools.count(1)
-    reader = easyocr.Reader(["en"])
-    while not (timer := reader.readtext(img, detail=0, allowlist=string.digits + ":")):
-        if next(retries) > 10:
-            raise ValueError("Too many retries, OCR can't recognize characters.")
+    reader, screenshot_retries = easyocr.Reader(["en"]), itertools.count(1)
+
+    # Screenshot at most 5 times, and try to OCR screenshot at most 10 times.
+    while next(screenshot_retries) < 5:
+        img = screenshot_dota_timer()
+        ocr_retries = itertools.count(1)
+        while not (
+            timer := reader.readtext(img, detail=0, allowlist=string.digits + ":")
+        ):
+            if next(ocr_retries) > 10:
+                break
+        else:
+            break
+    else:
+        raise ValueError("Too many retries, OCR can't recognize characters.")
     timer = timer[0]
     if ":" not in timer:
         timer = f"{timer[:-2]}:{timer[-2:]}"
