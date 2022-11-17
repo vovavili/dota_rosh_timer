@@ -288,10 +288,10 @@ def main(
 
     # Screenshot at most 5 times, and try to OCR screenshot at most 10 times.
     while next(screenshot_retries) < 5:
-        img = screenshot_dota_timer()
+        image = screenshot_dota_timer()
         ocr_retries = itertools.count(1)
         while not (
-            timer := reader.readtext(img, detail=0, allowlist=string.digits + ":")
+            timer := reader.readtext(image, detail=0, allowlist=string.digits + ":")
         ):
             if next(ocr_retries) > 10:
                 break
