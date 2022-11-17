@@ -21,7 +21,7 @@ import string
 from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta
 from enum import Enum
-from functools import wraps, partial
+from functools import partial, wraps
 from gettext import gettext as _
 from pathlib import Path
 from typing import Final, Literal, Optional, ParamSpec, TypeVar
@@ -140,7 +140,7 @@ def make_update_timestamp(filename: str, days: int, patch: str) -> None:
 
 
 def get_latest_patch() -> str:
-    """Get the latest availible DotA 2 patch."""
+    """Get the latest available DotA 2 patch."""
     with urlopen(
         "https://raw.githubusercontent.com/odota/dotaconstants/master/"
         "build/patchnotes.json"
