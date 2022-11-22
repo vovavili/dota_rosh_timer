@@ -17,6 +17,7 @@ from __future__ import annotations
 import gettext
 import itertools
 import string
+import tkinter as tk
 from collections.abc import Iterable
 from datetime import timedelta
 from enum import Enum
@@ -194,6 +195,11 @@ def main(
         else:
             break
     else:
+        # Make a bell sound to indicate an OCR error
+        root = tk.Tk()
+        root.overrideredirect(True)
+        root.withdraw()
+        root.bell()
         raise ValueError("Too many retries, OCR can't recognize characters.")
     timer = timer[0]
     if ":" not in timer:
