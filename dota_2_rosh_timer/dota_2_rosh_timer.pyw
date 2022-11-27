@@ -195,6 +195,7 @@ def main(
         else:
             break
     else:
+        pyperclip.copy("")
         # Make a bell sound to indicate an OCR error
         root = tk.Tk()
         root.overrideredirect(True)
