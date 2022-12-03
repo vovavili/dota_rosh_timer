@@ -41,7 +41,6 @@ Installation guide
 TODO
 -------
 * Add unit tests.
-* Make deployment easier with PEX_.
 
 Credits
 -------
@@ -63,4 +62,3 @@ MIT_
 .. _MIT: https://github.com/vovavili/dota_rosh_timer/blob/master/LICENSE
 .. |Code| replace:: *Code -> Download ZIP*
 .. _Code: https://github.com/vovavili/dota_rosh_timer/archive/refs/heads/master.zip
-.. _PEX: https://github.com/pantsbuild/pex
