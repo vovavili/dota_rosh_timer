@@ -35,7 +35,7 @@ test_requirements = []
 setup(
     author="Vladimir Vilimaitis",
     author_email="vladimirvilimaitis@gmail.com",
-    python_requires=">=3.6",
+    python_requires=">=3.10",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: End Users/Desktop",
