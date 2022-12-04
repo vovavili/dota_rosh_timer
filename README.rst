@@ -30,7 +30,6 @@ Installation guide
 --------
 
 #. Install Python_, version 3.10 or above. Make sure not to untick the box to register Python directory in your PATH variable.
-#. Open a Windows Terminal from the Start menu and copy-paste the following command: ``pip install setuptools --user``
 #. Download and extract this repository using |Code|_ button at the top of this page, slightly to the right.
 #. Install required dependencies by double-clicking on the *setup.py* file.
 #. Set up a macros to run *"rosh_death_timer.pyw"* script using a hotkey of your choice. I recommend either using your specialized mouse and keyboard software or AutoHotKey_.
