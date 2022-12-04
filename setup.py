@@ -8,7 +8,9 @@ except ImportError:
     import subprocess
     import sys
 
-    subprocess.run([sys.executable, "-m", "pip", "install", "setuptools"], check=True)
+    subprocess.run(
+        [sys.executable, "-m", "pip", "install", "--user", "setuptools"], check=True
+    )
     from setuptools import setup, find_packages
 
 with open("README.rst") as readme_file:
