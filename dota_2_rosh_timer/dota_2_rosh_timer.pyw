@@ -24,13 +24,13 @@ from enum import Enum
 from gettext import gettext as _
 from typing import Literal, Optional
 
+import cv2 as cv
 import easyocr
 import numpy as np
 import numpy.typing as npt
 import pyperclip
 import screeninfo
 import typer
-from cv2 import cv2 as cv
 from PIL import ImageGrab
 
 from cache import HOME_DIR, get_cooldowns
@@ -118,7 +118,7 @@ def screenshot_dota_timer() -> npt.NDArray[np.uint8]:
         half_width + offset,
         height // 30,
     )
-    image = np.asarray(ImageGrab.grab(bbox=bbox))  # NOQA
+    image = np.array(ImageGrab.grab(bbox=bbox))  # NOQA
     # Image pre-processing in OpenCV
     # Blend in daytime indicator color into the dark background
     yellow_min = np.array([140, 115, 75], np.uint8)
