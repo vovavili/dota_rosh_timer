@@ -30,9 +30,8 @@ Installation guide
 --------
 
 #. Install Python_, version 3.10 or above. Make sure not to untick the box to register Python directory in your PATH variable.
-#. Download and extract this repository using |Code|_ button at the top of this page, slightly to the right.
-#. Install required dependencies by double-clicking on the *setup.py* file.
-#. Set up a macros to run *"rosh_death_timer.pyw"* script using a hotkey of your choice. I recommend either using your specialized mouse and keyboard software or AutoHotKey_.
+#. Download the latest release_.
+#. Set up a macros to run *"rosh_death_timer.pyzw"* script using a hotkey of your choice. I recommend either using your specialized mouse and keyboard software or AutoHotKey_.
 #. Additionally, `create a .bat file <https://datatofish.com/batch-python-script/>`_ and specify other macros to run the same script with ``glyph``, ``buyback``, ``item`` or ``ability`` arguments.
 #. Additionally, specify whether you'd like to have an output for time splits in other languages (Russian, Spanish).
 #. The first run will take significantly longer, as you will have to download required data for OCR.
@@ -59,5 +58,5 @@ MIT_
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
 .. _MIT: https://github.com/vovavili/dota_rosh_timer/blob/master/LICENSE
-.. |Code| replace:: *Code -> Download ZIP*
+.. _release: https://github.com/vovavili/dota_rosh_timer/releases
 .. _Code: https://github.com/vovavili/dota_rosh_timer/archive/refs/heads/master.zip

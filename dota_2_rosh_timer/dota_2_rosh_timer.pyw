@@ -118,7 +118,7 @@ def screenshot_dota_timer() -> npt.NDArray[np.uint8]:
         half_width + offset,
         height // 30,
     )
-    image = np.asarray(ImageGrab.grab(bbox=bbox))  # NOQA
+    image = np.array(ImageGrab.grab(bbox=bbox))  # NOQA
     # Image pre-processing in OpenCV
     # Blend in daytime indicator color into the dark background
     yellow_min = np.array([140, 115, 75], np.uint8)
