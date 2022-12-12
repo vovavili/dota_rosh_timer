@@ -1,0 +1,8 @@
+easyocr==1.6.2
+numpy==1.23.5
+opencv_python_headless==4.6.0.66
+Pillow==9.3.0
+pyperclip==1.8.2
+pysimdjson==5.0.2
+screeninfo==0.8.1
+typer==0.7.0
