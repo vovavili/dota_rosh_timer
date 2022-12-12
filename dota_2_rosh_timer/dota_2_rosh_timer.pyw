@@ -24,13 +24,13 @@ from enum import Enum
 from gettext import gettext as _
 from typing import Literal, Optional
 
-import cv2 as cv
 import easyocr
 import numpy as np
 import numpy.typing as npt
 import pyperclip
 import screeninfo
 import typer
+from cv2 import cv2 as cv
 from PIL import ImageGrab
 
 from cache import HOME_DIR, get_cooldowns
