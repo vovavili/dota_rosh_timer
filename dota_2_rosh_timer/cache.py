@@ -76,14 +76,14 @@ def get_cooldowns(
     )
     update_timestamp = partial(make_update_timestamp, timestamp_filename)
     try:
-        if not force_update:
+        if force_update:
             raise ValueError
         # Check whether the locally stored cache needs an update
         timestamp = Parser().load(timestamp_filename)
         # Only prune cache if new patch has been released
         if datetime.now() > datetime.fromisoformat(timestamp["timestamp"]):
             patch = get_latest_patch()
-            if patch == timestamp["patch"]:
+            if patch != timestamp["patch"]:
                 raise ValueError
             update_timestamp(patch)
         # Load the locally stored cache, if it exists
