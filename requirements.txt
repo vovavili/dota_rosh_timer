@@ -1,6 +1,6 @@
 easyocr==1.6.2
 numpy==1.23.5
-opencv_python_headless==4.6.0.66
+opencv-python==4.5.4.60
 Pillow==9.3.0
 pyperclip==1.8.2
 pysimdjson==5.0.2
