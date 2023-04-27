@@ -168,7 +168,7 @@ def main(
     del globals()["_"]  # Keep PyCharm happy
 
     timers_sep, sep_prefix = TimersSep.ARROW, None
-    if to_track in {ToTrack.ROSHAN, ToTrack.TORMENTOR, ToTrack.GLYPH, ToTrack.BUYBACK}:
+    if to_track not in {ToTrack.ITEM, ToTrack.ABILITY}:
         times = to_track.times
         if to_track is ToTrack.ROSHAN:
             sep_prefix = (_("kill"), _("exp"), _("min"), _("max"))
