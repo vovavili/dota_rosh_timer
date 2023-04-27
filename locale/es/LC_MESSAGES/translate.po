@@ -44,3 +44,7 @@ msgstr "max"
 #: C:\Users\vladi\OneDrive\Documents\dota_2_rosh_timer\dota_2_rosh_timer\dota_2_rosh_timer.pyw:233
 msgid "min"
 msgstr "min"
+
+#: C:\Users\vladi\OneDrive\Documents\dota_2_rosh_timer\dota_2_rosh_timer\dota_2_rosh_timer.pyw:233
+msgid "tormentor"
+msgstr "torturador"

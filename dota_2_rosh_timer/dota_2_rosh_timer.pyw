@@ -49,6 +49,7 @@ class ToTrack(str, Enum):
 
     ROSHAN = "roshan"
     GLYPH = "glyph"
+    TORMENTOR = "tormentor"
     BUYBACK = "buyback"
     ITEM = "item"
     ABILITY = "ability"
@@ -60,7 +61,7 @@ class ToTrack(str, Enum):
 
     @property
     def times(
-        self: Literal[ToTrack.ROSHAN, ToTrack.GLYPH, ToTrack.BUYBACK]
+        self: Literal[ToTrack.ROSHAN, ToTrack.GLYPH, ToTrack.BUYBACK, ToTrack.TORMENTOR]
     ) -> list[timedelta]:
         """Get corresponding time splits for a constant."""
         match self:
@@ -74,6 +75,8 @@ class ToTrack(str, Enum):
                 return [timedelta(minutes=5)]
             case ToTrack.BUYBACK:
                 return [timedelta(minutes=8)]
+            case ToTrack.TORMENTOR:
+                return [timedelta(minutes=10)]
 
 
 class TimersSep(str, Enum):
@@ -165,7 +168,7 @@ def main(
     del globals()["_"]  # Keep PyCharm happy
 
     timers_sep, sep_prefix = TimersSep.ARROW, None
-    if to_track in {ToTrack.ROSHAN, ToTrack.GLYPH, ToTrack.BUYBACK}:
+    if to_track in {ToTrack.ROSHAN, ToTrack.TORMENTOR, ToTrack.GLYPH, ToTrack.BUYBACK}:
         times = to_track.times
         if to_track is ToTrack.ROSHAN:
             sep_prefix = (_("kill"), _("exp"), _("min"), _("max"))
