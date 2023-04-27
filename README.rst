@@ -36,9 +36,6 @@ Installation guide
 #. Additionally, specify whether you'd like to have an output for time splits in other languages (Russian, Spanish).
 #. The first run will take significantly longer, as you will have to download required data for OCR.
 
-TODO
--------
-* Add unit tests.
 
 Credits
 -------
