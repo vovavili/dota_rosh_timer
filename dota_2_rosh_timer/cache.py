@@ -1,9 +1,9 @@
 """
 A module for OpenDota constants caching functions.
 """
+import datetime as dt
 import os
 from collections.abc import Callable, Iterable
-from datetime import datetime, timedelta
 from functools import partial, wraps
 from pathlib import Path
 from typing import Final, ParamSpec, TypeVar
@@ -42,7 +42,7 @@ def enter_subdir(subdir: str) -> Callable[[Callable[P, T]], Callable[P, T]]:
 
 def make_update_timestamp(filename: str, patch: str, days: int = 2) -> None:
     """Set the time threshold at which the cache timestamp has to be checked."""
-    timestamp = datetime.now() + timedelta(days=days)
+    timestamp = dt.datetime.now() + dt.timedelta(days=days)
     timestamp = simdjson.dumps({"timestamp": timestamp.isoformat(), "patch": patch})
     with open(filename, "w", encoding="utf-8") as file:
         file.write(timestamp)
@@ -81,7 +81,7 @@ def get_cooldowns(
         # Check whether the locally stored cache needs an update
         timestamp = Parser().load(timestamp_filename)
         # Only prune cache if new patch has been released
-        if datetime.now() > datetime.fromisoformat(timestamp["timestamp"]):
+        if dt.datetime.now() > dt.datetime.fromisoformat(timestamp["timestamp"]):
             patch = get_latest_patch()
             if patch != timestamp["patch"]:
                 raise ValueError

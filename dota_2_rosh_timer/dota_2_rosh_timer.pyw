@@ -14,13 +14,13 @@ track metrics like glyph, buyback, item and ability cooldowns.
 
 from __future__ import annotations
 
+import datetime as dt
 import gettext
 import itertools
 import string
 import time
 import tkinter as tk
 from collections.abc import Iterable
-from datetime import timedelta
 from enum import Enum
 from gettext import gettext as _
 from typing import Literal, Optional
@@ -63,21 +63,21 @@ class ToTrack(str, Enum):
     @property
     def times(
         self: Literal[ToTrack.ROSHAN, ToTrack.GLYPH, ToTrack.BUYBACK, ToTrack.TORMENTOR]
-    ) -> list[timedelta]:
+    ) -> list[dt.timedelta]:
         """Get corresponding time splits for a constant."""
         match self:
             case ToTrack.ROSHAN:
                 return [
-                    timedelta(minutes=5),
-                    timedelta(minutes=3),
-                    timedelta(minutes=3),
+                    dt.timedelta(minutes=5),
+                    dt.timedelta(minutes=3),
+                    dt.timedelta(minutes=3),
                 ]
             case ToTrack.GLYPH:
-                return [timedelta(minutes=5)]
+                return [dt.timedelta(minutes=5)]
             case ToTrack.BUYBACK:
-                return [timedelta(minutes=8)]
+                return [dt.timedelta(minutes=8)]
             case ToTrack.TORMENTOR:
-                return [timedelta(minutes=10)]
+                return [dt.timedelta(minutes=10)]
 
 
 class TimersSep(str, Enum):
@@ -87,7 +87,7 @@ class TimersSep(str, Enum):
     PIPE = " || "
 
 
-def timedelta_to_dota_timer(delta: timedelta) -> str:
+def timedelta_to_dota_timer(delta: dt.timedelta) -> str:
     """Convert a timedelta into a DotA timer string. Seconds are zero-padded."""
     delta = [str(t) for t in divmod(int(delta.total_seconds()), 60)]
     delta[-1] = delta[-1].zfill(2)
@@ -95,7 +95,7 @@ def timedelta_to_dota_timer(delta: timedelta) -> str:
 
 
 def process_timedeltas(
-    arr_of_deltas: Iterable[timedelta],
+    arr_of_deltas: Iterable[dt.timedelta],
     prefix: str,
     timers_sep: TimersSep,
     sep_prefix: Iterable[str] | None,
@@ -182,10 +182,10 @@ def main(
     else:
         cooldown = get_cooldowns(to_track.plural, item_or_ability, force_update)
         if isinstance(cooldown, str | int):
-            times = [timedelta(seconds=int(cooldown))]
+            times = [dt.timedelta(seconds=int(cooldown))]
         else:
             timers_sep = TimersSep.PIPE
-            times = [timedelta(seconds=int(delta)) for delta in cooldown]
+            times = [dt.timedelta(seconds=int(delta)) for delta in cooldown]
             if to_track is to_track.ABILITY and len(times) == 3:
                 sep_prefix = ("lvl 6", "lvl 12", "lvl 18")
         to_track = item_or_ability.replace("_", " ")
@@ -214,7 +214,7 @@ def main(
     if ":" not in timer:
         timer = f"{timer[:-2]}:{timer[-2:]}"
     minutes, seconds = map(int, timer.split(":"))
-    timer = [timedelta(minutes=minutes, seconds=seconds)]
+    timer = [dt.timedelta(minutes=minutes, seconds=seconds)]
     times = (
         itertools.accumulate(timer + times)
         if timers_sep is TimersSep.ARROW
