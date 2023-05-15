@@ -17,6 +17,7 @@ from __future__ import annotations
 import gettext
 import itertools
 import string
+import time
 import tkinter as tk
 from collections.abc import Iterable
 from datetime import timedelta
@@ -167,6 +168,11 @@ def main(
     ).install()
     del globals()["_"]  # Keep PyCharm happy
 
+    # Tkinter can be used to make a bell sound
+    root = tk.Tk()
+    root.overrideredirect(True)
+    root.withdraw()
+
     timers_sep, sep_prefix = TimersSep.ARROW, None
     if to_track not in {ToTrack.ITEM, ToTrack.ABILITY}:
         times = to_track.times
@@ -199,11 +205,10 @@ def main(
             break
     else:
         pyperclip.copy("")
-        # Make a bell sound to indicate an OCR error
-        root = tk.Tk()
-        root.overrideredirect(True)
-        root.withdraw()
-        root.bell()
+        # Make a bell sound three times to indicate an OCR error
+        for i in range(3):
+            root.bell()
+            time.sleep(0.2)
         raise ValueError("Too many retries, OCR can't recognize characters.")
     timer = timer[0]
     if ":" not in timer:
@@ -216,6 +221,8 @@ def main(
         else timer + [timer[0] + delta for delta in times]
     )
     pyperclip.copy(process_timedeltas(times, to_track, timers_sep, sep_prefix))
+    # Make a bell sound one time to indicate success
+    root.bell()
     typer.secho("Done!", fg=typer.colors.GREEN)
 
 
