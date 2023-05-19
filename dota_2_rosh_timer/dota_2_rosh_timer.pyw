@@ -208,7 +208,7 @@ def main(
         # Make a bell sound three times to indicate an OCR error
         for i in range(3):
             root.bell()
-            time.sleep(0.2)
+            time.sleep(1)
         raise ValueError("Too many retries, OCR can't recognize characters.")
     timer = timer[0]
     if ":" not in timer:
