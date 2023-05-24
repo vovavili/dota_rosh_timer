@@ -159,7 +159,6 @@ def main(
 
     # OCR can take a long time, so we need to offset the computation time
     start_time = time.perf_counter()
-
     typer.echo("Running...")
 
     language = [language[:2] if language is not Language.SPANISH else "es"]
