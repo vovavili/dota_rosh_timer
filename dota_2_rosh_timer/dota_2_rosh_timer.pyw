@@ -157,6 +157,9 @@ def main(
     """The main function. One can pass a command-line argument to track other
     metrics here."""
 
+    # OCR can take a long time, so we need to offset the computation time
+    start_time = time.perf_counter()
+
     typer.echo("Running...")
 
     language = [language[:2] if language is not Language.SPANISH else "es"]
@@ -214,7 +217,8 @@ def main(
     if ":" not in timer:
         timer = f"{timer[:-2]}:{timer[-2:]}"
     minutes, seconds = map(int, timer.split(":"))
-    timer = [dt.timedelta(minutes=minutes, seconds=seconds)]
+    computation_time = dt.timedelta(seconds=int(time.perf_counter() - start_time))
+    timer = [dt.timedelta(minutes=minutes, seconds=seconds) - computation_time]
     times = (
         itertools.accumulate(timer + times)
         if timers_sep is TimersSep.ARROW
