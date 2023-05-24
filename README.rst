@@ -10,7 +10,7 @@ DotA 2 Roshan death timer macros, using computer vision. Tracks expiration time,
 maximum respawn timer as contents of your clipboard. Handy in combination with `Win+V <https://support.microsoft.com/en-us/windows/clipboard-in-windows-c436501e-985d-1c8d-97ea-fe46ddf338c6>`_ clipboard hotkey.
 Should work on any 1920x1080 screen, other monitor sizes not tested.
 
-You may or may not get VAC-banned for using this in your games, though I *presume* that a ban is unlikely as you are not interacting with DotA files in any direct or indirect way.
+You may or may not get VAC-banned for using this in your games, though it is very unlikely as you're not interacting with DotA 2 client in any way. I've used this script over a thousand times in ranked without any consequence over the course of one year.
 Use on your own risk.
 
 By default (``dota_2_rosh_timer.pyw``), this tracks the Roshan timer. One can also specify command line arguments to track:
