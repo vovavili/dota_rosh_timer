@@ -15,7 +15,7 @@ track metrics like glyph, buyback, item and ability cooldowns.
 from __future__ import annotations
 
 # Both imports and OCR can take a long time, so we need to offset the script total runtime
-# Specifically, "from cache import HOME_DIR, get_cooldowns" causes a slowdown
+# Specifically, "from cache import HOME_DIR, get_cooldowns" causes a 2-3 seconds slowdown
 import time
 from typing import Final, Literal, Optional
 
