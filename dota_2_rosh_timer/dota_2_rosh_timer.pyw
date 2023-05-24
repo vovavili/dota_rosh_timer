@@ -17,8 +17,9 @@ from __future__ import annotations
 # Both imports and OCR can take a long time, so we need to offset the script total runtime
 # Specifically, "from cache import HOME_DIR, get_cooldowns" causes a slowdown
 import time
+from typing import Final, Literal, Optional
 
-start_time = time.perf_counter()
+START_TIME: Final[float] = time.perf_counter()
 
 import datetime as dt
 import gettext
@@ -28,7 +29,6 @@ import tkinter as tk
 from collections.abc import Iterable
 from enum import Enum
 from gettext import gettext as _
-from typing import Literal, Optional
 
 import cv2 as cv
 import easyocr
@@ -219,7 +219,7 @@ def main(
     if ":" not in timer:
         timer = f"{timer[:-2]}:{timer[-2:]}"
     minutes, seconds = map(int, timer.split(":"))
-    computation_time = dt.timedelta(seconds=int(time.perf_counter() - start_time))
+    computation_time = dt.timedelta(seconds=int(time.perf_counter() - START_TIME))
     timer = [dt.timedelta(minutes=minutes, seconds=seconds) - computation_time]
     times = (
         itertools.accumulate(timer + times)
