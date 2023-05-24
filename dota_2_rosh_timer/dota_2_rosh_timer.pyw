@@ -14,11 +14,15 @@ track metrics like glyph, buyback, item and ability cooldowns.
 
 from __future__ import annotations
 
+# Both imports and OCR can take a long time, so we need to offset the script total runtime
+import time
+
+start_time = time.perf_counter()
+
 import datetime as dt
 import gettext
 import itertools
 import string
-import time
 import tkinter as tk
 from collections.abc import Iterable
 from enum import Enum
@@ -137,18 +141,18 @@ def main(
     to_track: ToTrack = typer.Argument(
         ToTrack.ROSHAN,
         help="Specify the kind of information you want to track. If no argument "
-        "is specified, Roshan death time is tracked.",
+             "is specified, Roshan death time is tracked.",
     ),
     item_or_ability: Optional[str] = typer.Argument(
         None,
         help="Specify the cooldown of what item or ability you want to track. "
-        "For abilities, make sure to prefix the hero name "
-        "(e.g. `faceless_void_chronosphere`).",
+             "For abilities, make sure to prefix the hero name "
+             "(e.g. `faceless_void_chronosphere`).",
     ),
     language: Language = typer.Option(
         Language.ENGLISH,
         help="Specify the output language for Roshan death timer. If no argument "
-        "is specified, English is chosen.",
+             "is specified, English is chosen.",
     ),
     force_update: bool = typer.Option(
         False, "--force_update", help="Force locally stored cache update."
@@ -157,8 +161,6 @@ def main(
     """The main function. One can pass a command-line argument to track other
     metrics here."""
 
-    # OCR can take a long time, so we need to offset the computation time
-    start_time = time.perf_counter()
     typer.echo("Running...")
 
     language = [language[:2] if language is not Language.SPANISH else "es"]
