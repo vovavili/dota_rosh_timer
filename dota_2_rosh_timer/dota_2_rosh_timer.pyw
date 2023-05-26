@@ -110,7 +110,7 @@ def process_timedeltas(
     times = map(timedelta_to_dota_timer, arr_of_deltas)
     if sep_prefix is not None:
         times = (" ".join(t) for t in zip(sep_prefix, times))
-    return prefix + " " + timers_sep.join(times)
+    return prefix + " " + timers_sep.join(times) + " "
 
 
 def screenshot_dota_timer() -> npt.NDArray[np.uint8]:
